@@ -7,6 +7,8 @@ from pandarallel import pandarallel
 #add to docker bcftools & pandarallel
 #run python3.11 -m pip install -U decorator && python3.11 -m pip install -U psutil
 
+#look into https://stackoverflow.com/questions/26784164/pandas-multiprocessing-apply
+
 pandarallel.initialize(nb_workers=8)
 
 tumor_only_path = '/home/ubuntu/mount/samples_tumor_only_benchmarking/public_tumor_only'
@@ -54,13 +56,11 @@ tumor_consensus_sample_ID=tumor_consensus_sample_ID.sort_values('sample_id',asce
 tumor_consensus_sample_ID['result']=tumor_consensus_sample_ID.parallel_apply(lambda row : run_rtg(row['sample_id'],row['tumor_only_file'],row['consensus_only_files']),axis=1)
 tumor_consensus_sample_ID.to_csv("manifest.tsv",sep='\t',index=False)
 
-
 #    --output-mode=split \
 header_string='Threshold  True-pos-baseline  True-pos-call  False-pos  False-neg  Precision  Sensitivity  F-measure'
 header=header_string.split('\n')[0].split()
 
 #Threshold  True-pos-baseline  True-pos-call  False-pos  False-neg  Precision  Sensitivity  F-measure
 #result=result.split()
-
 #df.columns=headers
 #print(tumor_consensus_sample_ID)
