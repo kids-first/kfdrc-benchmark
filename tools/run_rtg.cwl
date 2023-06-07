@@ -51,5 +51,5 @@ outputs:
    results_dir:
     type: Directory
     outputBinding:
-      glob: "results"
+      glob: "results_rtg"
     doc: directory containing output for all the samples from RTG
