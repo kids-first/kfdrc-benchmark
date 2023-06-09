@@ -1,7 +1,7 @@
 cwlVersion: v1.2
 class: Workflow
 id: run_benchmarking
-doc: This CWL workflow convert fasta to SDF and runs RTG over all the sample vcf provide in test_folder
+doc: This CWL workflow convert fasta to SDF and runs RTG over all the sample vcf provide in test_folder using consensus folder
 requirements:
 - class: StepInputExpressionRequirement
 - class: InlineJavascriptRequirement 
