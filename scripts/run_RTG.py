@@ -25,29 +25,33 @@ def map_sample_id_with_file(path):
             samples_vcf = (subprocess.check_output(cmd_samples, shell=True).decode("utf-8").strip())
             if re.search('\n',samples_vcf):
                 for sample in samples_vcf.split('\n'):
-                    sample_id_files.append([sample,file])
+                    sample_id_files.append([sample,file_path])
                 continue
             else:    
-                sample_id_files.append([samples_vcf,file])    
+                sample_id_files.append([samples_vcf,file_path])    
     
     return pd.DataFrame(sample_id_files,columns=['sample_id','file_path'])
 
 def run_rtg(sample_id,tumor_only_file,consensus_only_files,ref_file):
     '''
-    This function will run rtg and return results from rtg tool
+    This function will run rtg and return result from rtg tool
     '''
     
     if os.path.isfile(consensus_only_files) and os.path.isfile(tumor_only_file):
         index_file_tumor_only=tumor_only_file+'.tbi'
         index_file_consensus_only=consensus_only_files+'.tbi'
-        if os.path.isfile(consensus_only_files) and os.path.isfile(tumor_only_file) and os.path.isfile(index_file_consensus_only) and os.path.isfile(index_file_tumor_only) : # run only when tumor only and consensus file exist     
+        if os.path.isfile(index_file_consensus_only) and os.path.isfile(index_file_tumor_only) : # run only when tumor only and consensus file exist     
             print('Running RTG on: ',sample_id,file=sys.stderr)
             cmd='rtg vcfeval --baseline='+consensus_only_files+' --sample='+sample_id +' -c '+ tumor_only_file + ' -t '+ref_file+' -o results_rtg/'+sample_id+'_rtg'
             output=subprocess.check_output(cmd, shell=True).decode("utf-8").strip()
             
             return output.split('\n')[-1].split()
+        else:
+            print('Warning: Skipping RTG run for',sample_id,'- cannot find index file',index_file_consensus_only,' or ',index_file_tumor_only,file=sys.stderr)
+            return [None,None,None,None,None,None,None,None]
+
     else:
-        print('Warning: Skipping RTG run for',sample_id,'- cannot find either tumor or consensus files with their index files',file=sys.stderr)
+        print('Warning: Skipping RTG run for',sample_id,'- cannot find either tumor or consensus file',file=sys.stderr)
         return [None,None,None,None,None,None,None,None]
     
 if __name__=="__main__":    
@@ -67,14 +71,16 @@ if __name__=="__main__":
 
     args = parser.parse_args()
 
-    pandarallel.initialize(nb_workers=int(int(args.workers)/2)) #divide by 2 for load balancing as rtg tool will also utilize multi processing for single runs
+    pandarallel.initialize(nb_workers=int(int(args.workers)/2)) #divide by 2 for load balancing as rtg tool will also utilize multi processing for single run
 
     consensus_path=args.consensus_folder_path
     tumor_only_path=args.test_folder_path 
     ref_file=args.ref_folder_sdf
 
     tumor_only_manifest=map_sample_id_with_file(tumor_only_path)
+    #tumor_only_manifest=tumor_only_manifest.duplicated(subset=['sample_id'],keep='last')
     consensus_only_manifest=map_sample_id_with_file(consensus_path )
+    #consensus_only_manifest=consensus_only_manifest.duplicated(subset=['sample_id'],keep='last')
 
     tumor_consensus_sample_ID=pd.merge(tumor_only_manifest,consensus_only_manifest,on=['sample_id'],how='inner')
     tumor_consensus_sample_ID=tumor_consensus_sample_ID.rename(columns={'file_path_x':'test_input_file','file_path_y':'reference_file'})
