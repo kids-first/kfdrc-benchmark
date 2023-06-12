@@ -38,7 +38,7 @@ inputs:
   test_folder: { doc: provide folder containing test vcf file with index files, type: Directory, inputBinding: { prefix: --test_folder_path, position: 2} }
   consensus_folder_path: { doc: provide folder containing consensus vcf file with index files, type: Directory, inputBinding: { prefix: --consensus_folder_path, position: 2 }  }
   ref_folder: { doc: provide reference file in fasta format, type: 'Directory?', inputBinding: { prefix: --ref_folder_sdf, position: 2 }  }
-  ram: { doc: provide ram (in GB) based on number of test files, type: 'int?', default: 7 } 
+  ram: { doc: provide ram (in GB) based on number of test files, type: 'int?', default: 8 } 
   output_file_name: { doc: provide output file name, type: string, inputBinding: { prefix: --output_file_name, position: 2 } }
   cores: { doc: provide cores to run samples in multiprocessing, type: 'int?', default: 8,inputBinding: { prefix: --worker, position: 2 } }
 
@@ -48,6 +48,11 @@ outputs:
     outputBinding:
      glob: $(inputs.output_file_name).tsv
     doc: benchmarking output in tsv format
+   output_mean:
+    type: File
+    outputBinding:
+     glob: $(inputs.output_file_name)_mean.tsv
+    doc: benchmarking output in tsv format 
    results_dir:
     type: Directory
     outputBinding:

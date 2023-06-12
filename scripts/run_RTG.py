@@ -2,10 +2,10 @@ import pandas as pd
 import os
 import subprocess
 import re
-from pandarallel import pandarallel
 import argparse
 import warnings
 import sys
+from pandarallel import pandarallel
 
 
 def map_sample_id_with_file(path):
@@ -53,11 +53,13 @@ def run_rtg(sample_id, tumor_only_file, consensus_only_files, ref_file):
                 + consensus_only_files
                 + " --sample="
                 + sample_id
-                + " -c "
+                + " --calls "
                 + tumor_only_file
-                + " -t "
+                + " --template "
                 + ref_file
-                + " -o results_rtg/"
+                + " --all-records"
+                + " --no-roc"
+                + " --output results_rtg/"
                 + sample_id
                 + "_rtg"
             )
@@ -187,9 +189,47 @@ if __name__ == "__main__":
     ]
 
     if not args.output_file_name.endswith(".tsv"):
+        output_mean = args.output_file_name + "_mean.tsv"
         output_file = args.output_file_name + ".tsv"
+
     else:
         output_file = args.output_file_name
+        tmp_list = output_file.split(".")
+        output_mean = tmp_list[0] + "_mean.tsv"
 
-    # print output file
+    # write output file
     tumor_consensus_sample_ID.to_csv(output_file, sep="\t", index=False)
+
+    tumor_consensus_sample_ID = (
+        tumor_consensus_sample_ID.dropna()
+    )  # drop nan if any to compute average of all the samples
+
+    tumor_consensus_sample_ID = tumor_consensus_sample_ID.astype(
+        {
+            "Precision": float,
+            "Sensitivity": float,
+            "F-measure": float,
+            "True-pos-baseline": int,
+            "True-pos-call": int,
+            "False-pos": int,
+            "False-neg": int,
+        }
+    )
+
+    mean_results_df = tumor_consensus_sample_ID[
+        [
+            "Precision",
+            "Sensitivity",
+            "F-measure",
+            "True-pos-baseline",
+            "True-pos-call",
+            "False-pos",
+            "False-neg",
+        ]
+    ].mean()  # compute mean
+
+    mean_results_df["No. of samples"] = len(tumor_consensus_sample_ID.index)
+    mean_results_df = mean_results_df.round(2)
+
+    # write average results
+    mean_results_df.to_csv(output_mean, sep="\t", index=True)
