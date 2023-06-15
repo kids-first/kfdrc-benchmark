@@ -15,12 +15,11 @@ def map_sample_id_with_file(path):
     """
 
     bcftools_samples = "bcftools query -l "
-    exe = "vcf.gz"
     sample_id_files = []
 
     filelist = os.listdir(path)
     for file in filelist:
-        if file.endswith(exe):
+        if file.endswith("vcf.gz"):
             file_path = path + "/" + file
             cmd_samples = bcftools_samples + file_path
             samples_vcf = (
@@ -29,7 +28,6 @@ def map_sample_id_with_file(path):
             if re.search("\n", samples_vcf):
                 for sample in samples_vcf.split("\n"):
                     sample_id_files.append([sample, file_path])
-                continue
             else:
                 sample_id_files.append([samples_vcf, file_path])
 
@@ -43,33 +41,49 @@ def run_rtg(sample_id, tumor_only_file, consensus_only_files, ref_file):
 
     # Check that VCFs exist
     if not os.path.isfile(consensus_only_files) or not os.path.isfile(tumor_only_file):
-        print(f"Warning: Skipping RTG run for {sample_id} - cannot find either tumor or consensus file", file=sys.stderr)
+        print(
+            f"Warning: Skipping RTG run for {sample_id} - cannot find either tumor or consensus file",
+            file=sys.stderr,
+        )
         return [None, None, None, None, None, None, None, None]
 
     # Check that VCFs have TBI indexes
-    index_file_consensus_only = consensus_only_files + '.tbi'
-    index_file_tumor_only = tumor_only_file + '.tbi'
-    if not os.path.isfile(index_file_consensus_only) or not os.path.isfile(index_file_tumor_only):
-        print(f"Warning: Skipping RTG run for {sample_id} - cannot find index file {index_file_consensus_only} or {index_file_tumor_only}", file=sys.stderr)
+    index_file_consensus_only = consensus_only_files + ".tbi"
+    index_file_tumor_only = tumor_only_file + ".tbi"
+    if not os.path.isfile(index_file_consensus_only) or not os.path.isfile(
+        index_file_tumor_only
+    ):
+        print(
+            f"Warning: Skipping RTG run for {sample_id} - cannot find index file {index_file_consensus_only} or {index_file_tumor_only}",
+            file=sys.stderr,
+        )
         return [None, None, None, None, None, None, None, None]
-        
+
     # Run RTG on proper inputs
     print("Running RTG on: ", sample_id, file=sys.stderr)
     cmd = (
-        "rtg vcfeval " \
-        f"--baseline={consensus_only_files} " \
-        f"--sample={sample_id} " \
-        f"--calls {tumor_only_file} " \
-        f"--template {ref_file} " \
-        "--all-records " \
-        "--no-roc " \
+        "rtg vcfeval "
+        f"--baseline={consensus_only_files} "
+        f"--sample={sample_id} "
+        f"--calls {tumor_only_file} "
+        f"--template {ref_file} "
+        "--all-records "
+        "--no-roc "
         f"--output results_rtg/{sample_id}_rtg"
     )
     output = subprocess.check_output(cmd, shell=True).decode("utf-8").strip()
+
     return output.split("\n")[-1].split()
 
 
-if __name__ == "__main__":
+def clean_filename(row):
+    """
+    Remove abs path and return just the file name
+    """
+    return row.split("/")[-1]
+
+
+def main():
     # Initialize parser
     parser = argparse.ArgumentParser()
 
@@ -169,6 +183,13 @@ if __name__ == "__main__":
         ]
     ]
 
+    tumor_consensus_sample_ID["test_input_file"] = tumor_consensus_sample_ID[
+        "test_input_file"
+    ].apply(clean_filename)
+    tumor_consensus_sample_ID["reference_file"] = tumor_consensus_sample_ID[
+        "reference_file"
+    ].apply(clean_filename)
+
     if not args.output_file_name.endswith(".tsv"):
         output_mean = args.output_file_name + "_mean.tsv"
         output_file = args.output_file_name + ".tsv"
@@ -209,8 +230,13 @@ if __name__ == "__main__":
         ]
     ].mean()  # compute mean
 
+    mean_results_df = mean_results_df.round(3)
     mean_results_df["No. of samples"] = len(tumor_consensus_sample_ID.index)
-    mean_results_df = mean_results_df.round(2)
+    mean_results_df = mean_results_df.to_frame(name="Average_results")
 
     # write average results
     mean_results_df.to_csv(output_mean, sep="\t", index=True)
+
+
+if __name__ == "__main__":
+    main()
