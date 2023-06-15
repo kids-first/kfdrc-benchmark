@@ -52,7 +52,7 @@ outputs:
     type: File
     outputBinding:
      glob: $(inputs.output_file_name)_mean.tsv
-    doc: benchmarking output in tsv format 
+    doc: mean benchmarking output for all the samples found in tsv format 
    results_dir:
     type: Directory
     outputBinding:
