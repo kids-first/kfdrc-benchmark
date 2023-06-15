@@ -14,7 +14,7 @@ inputs:
   cores: { doc: provide cores to run samples in multiprocessing, type: 'int?', default: 8 }
 outputs:
  benchmarking_tsv: { type: File, doc: benchmarking output in tsv format, outputSource: run_RTG/output_tsv }
- net_result: { type: File, doc: average benchmarking results , outputSource: run_RTG/output_mean }
+ average_result: { type: File, doc: average benchmarking results , outputSource: run_RTG/output_mean }
  rtg_results: { type: Directory, doc: directory containing output for all the samples from RTG, outputSource: run_RTG/results_dir }
 
 steps:
