@@ -41,51 +41,32 @@ def run_rtg(sample_id, tumor_only_file, consensus_only_files, ref_file):
     This function will run rtg and return result from rtg tool
     """
 
-    if os.path.isfile(consensus_only_files) and os.path.isfile(tumor_only_file):
-        index_file_tumor_only = tumor_only_file + ".tbi"
-        index_file_consensus_only = consensus_only_files + ".tbi"
-        if os.path.isfile(index_file_consensus_only) and os.path.isfile(
-            index_file_tumor_only
-        ):  # run only when tumor only and consensus file exist
-            print("Running RTG on: ", sample_id, file=sys.stderr)
-            cmd = (
-                "rtg vcfeval --baseline="
-                + consensus_only_files
-                + " --sample="
-                + sample_id
-                + " --calls "
-                + tumor_only_file
-                + " --template "
-                + ref_file
-                + " --all-records"
-                + " --no-roc"
-                + " --output results_rtg/"
-                + sample_id
-                + "_rtg"
-            )
-            output = subprocess.check_output(cmd, shell=True).decode("utf-8").strip()
-
-            return output.split("\n")[-1].split()
-        else:
-            print(
-                "Warning: Skipping RTG run for",
-                sample_id,
-                "- cannot find index file",
-                index_file_consensus_only,
-                " or ",
-                index_file_tumor_only,
-                file=sys.stderr,
-            )
-            return [None, None, None, None, None, None, None, None]
-
-    else:
-        print(
-            "Warning: Skipping RTG run for",
-            sample_id,
-            "- cannot find either tumor or consensus file",
-            file=sys.stderr,
-        )
+    # Check that VCFs exist
+    if not os.path.isfile(consensus_only_files) or not os.path.isfile(tumor_only_file):
+        print(f"Warning: Skipping RTG run for {sample_id} - cannot find either tumor or consensus file", file=sys.stderr)
         return [None, None, None, None, None, None, None, None]
+
+    # Check that VCFs have TBI indexes
+    index_file_consensus_only = consensus_only_files + '.tbi'
+    index_file_tumor_only = tumor_only_file + '.tbi'
+    if not os.path.isfile(index_file_consensus_only) or not os.path.isfile(index_file_tumor_only):
+        print(f"Warning: Skipping RTG run for {sample_id} - cannot find index file {index_file_consensus_only} or {index_file_tumor_only}", file=sys.stderr)
+        return [None, None, None, None, None, None, None, None]
+        
+    # Run RTG on proper inputs
+    print("Running RTG on: ", sample_id, file=sys.stderr)
+    cmd = (
+        "rtg vcfeval " \
+        f"--baseline={consensus_only_files} " \
+        f"--sample={sample_id} " \
+        f"--calls {tumor_only_file} " \
+        f"--template {ref_file} " \
+        "--all-records " \
+        "--no-roc " \
+        f"--output results_rtg/{sample_id}_rtg"
+    )
+    output = subprocess.check_output(cmd, shell=True).decode("utf-8").strip()
+    return output.split("\n")[-1].split()
 
 
 if __name__ == "__main__":
