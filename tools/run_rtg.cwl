@@ -39,6 +39,7 @@ inputs:
   consensus_folder_path: { doc: provide folder containing consensus vcf file with index files, type: Directory, inputBinding: { prefix: --consensus_folder_path, position: 2 }  }
   ref_folder: { doc: provide reference file in fasta format, type: 'Directory?', inputBinding: { prefix: --ref_folder_sdf, position: 2 }  }
   ram: { doc: provide ram (in GB) based on number of test files, type: 'int?', default: 8 } 
+  filter_string: { doc: provide bcftool format filter_string, type: string,default: '',inputBinding: { prefix: --filter, position: 2 } }
   output_file_name: { doc: provide output file name, type: string, inputBinding: { prefix: --output_file_name, position: 2 } }
   cores: { doc: provide cores to run samples in multiprocessing, type: 'int?', default: 8,inputBinding: { prefix: --worker, position: 2 } }
 

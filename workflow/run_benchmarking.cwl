@@ -1,7 +1,7 @@
 cwlVersion: v1.2
 class: Workflow
 id: run_benchmarking
-doc: This CWL workflow convert fasta to SDF and runs RTG over all the sample vcf provide in test_folder using consensus folder
+doc: This CWL workflow convert fasta to SDF and can filter based on filter string to run RTG over all the sample vcf provide in test_folder using consensus folder
 requirements:
 - class: StepInputExpressionRequirement
 - class: InlineJavascriptRequirement 
@@ -10,6 +10,7 @@ inputs:
   consensus_folder_path: { doc: provide folder containing consensus vcf file with index files, type: Directory }
   ref_file: { doc: provide reference file in fasta format, type: 'File?' }
   ram: { doc: provide ram (in GB) based on number of test files, type: 'int?', default: 7 } 
+  filter_string: { doc: provide bcftool format filter_string, type: string,default: '' }
   output_file_name: { doc: provide output file name, type: string }
   cores: { doc: provide cores to run samples in multiprocessing, type: 'int?', default: 8 }
 outputs:
@@ -30,6 +31,7 @@ steps:
        test_folder: test_folder
        ref_folder: convert_reference/ref_SDF
        consensus_folder_path: consensus_folder_path
+       filter_string: filter_string
        output_file_name: output_file_name
        ram: ram
        cores: cores
