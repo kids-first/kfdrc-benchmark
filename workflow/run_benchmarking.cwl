@@ -10,8 +10,8 @@ inputs:
   consensus_folder_path: { doc: provide folder containing consensus vcf file with index files, type: Directory }
   ref_file: { doc: provide reference file in fasta format, type: 'File?' }
   ram: { doc: provide ram (in GB) based on number of test files, type: 'int?', default: 7 } 
-  filter_string: { doc: provide bcftool format filter_string, type: string,default: '' }
   output_file_name: { doc: provide output file name, type: string }
+  filter_string: { doc: (optional) provide bcftool format filter_string example- INFO/DP>30 && INFO/AD>1, type: 'string?', default: '' }
   cores: { doc: provide cores to run samples in multiprocessing, type: 'int?', default: 8 }
 outputs:
  benchmarking_tsv: { type: File, doc: benchmarking output in tsv format, outputSource: run_RTG/output_tsv }
@@ -36,5 +36,5 @@ steps:
        ram: ram
        cores: cores
     out:
-       [ output_tsv, output_mean, results_dir]          
+       [ output_tsv, output_mean, results_dir, filter_folder]          
 
