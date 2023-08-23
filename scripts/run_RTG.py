@@ -7,6 +7,14 @@ import warnings
 import sys
 from pandarallel import pandarallel
 
+"""
+Script to filter and run rtg tool to benchmark only tumor calls with provided normal vcfs
+
+command line: python3.11 scripts/run_RTG.py -i tumor_files -c consenus_files -f 'FORMAT/DP>30 | FORMAT/AF>0.5' -o test -r /home/ubuntu/mount/tumor_only_benchmarking/reference/human
+
+author: Saksham Phul(phuls@chop.edu)
+"""
+
 
 def map_sample_id_with_file(path):
     """
@@ -34,9 +42,9 @@ def map_sample_id_with_file(path):
     return pd.DataFrame(sample_id_files, columns=["sample_id", "file_path"])
 
 
-def run_rtg(sample_id, tumor_only_file, consensus_only_files, ref_file):
+def run_rtg(sample_id, tumor_only_file, consensus_only_files, ref_file, filter_string):
     """
-    This function will run rtg and return result from rtg tool
+    This function can filter VCFs based on filter string (in bcftool format) and will run rtg to return result as confusion matrix/F1 scores
     """
 
     # Check that VCFs exist
@@ -59,18 +67,42 @@ def run_rtg(sample_id, tumor_only_file, consensus_only_files, ref_file):
         )
         return [None, None, None, None, None, None, None, None]
 
+    if len(filter_string) > 0:  # run with filter string provided
+
+        cmd_filter = (
+            "bcftools view -Oz --thread 4 "
+            f"-i '{filter_string}' "
+            f"-o filtered_vcfs/{sample_id}.filtered.vcf.gz "
+            f"{tumor_only_file} "
+            "&& "
+            f"tabix filtered_vcfs/{sample_id}.filtered.vcf.gz "
+        )
+
+        subprocess.run(cmd_filter, shell=True)
+        path_filtered_files=os.getcwd()+"/"+"filtered_vcfs/"+sample_id+".filtered.vcf.gz"
+        cmd = (
+            "rtg vcfeval "
+            f"--baseline={consensus_only_files}  "
+            f"--sample={sample_id} "
+            f"--calls {path_filtered_files} "
+            f"--template {ref_file} "
+            "--all-records "
+            "--no-roc "
+            f"--output results_rtg/{sample_id}_rtg"
+        )
+    else:  # run without the filter
+        cmd = (
+            "rtg vcfeval "
+            f"--baseline={consensus_only_files} "
+            f"--sample={sample_id} "
+            f"--calls {tumor_only_file} "
+            f"--template {ref_file} "
+            "--all-records "
+            "--no-roc "
+            f"--output results_rtg/{sample_id}_rtg"
+        )
     # Run RTG on proper inputs
     print("Running RTG on: ", sample_id, file=sys.stderr)
-    cmd = (
-        "rtg vcfeval "
-        f"--baseline={consensus_only_files} "
-        f"--sample={sample_id} "
-        f"--calls {tumor_only_file} "
-        f"--template {ref_file} "
-        "--all-records "
-        "--no-roc "
-        f"--output results_rtg/{sample_id}_rtg"
-    )
     output = subprocess.check_output(cmd, shell=True).decode("utf-8").strip()
 
     return output.split("\n")[-1].split()
@@ -102,7 +134,14 @@ def main():
         "-r", "--ref_folder_sdf", help="provide reference file in fasta format"
     )
     parser.add_argument(
-        "-t", "--workers", help="provide cores to run samples in multiprocessing"
+        "-t",
+        "--workers",
+        help="provide cores to run samples in multiprocessing",
+        type=int,
+        default=8,
+    )
+    parser.add_argument(
+        "-f", "--filter", help="provide filter string in bcftool format", default=""
     )
     parser.add_argument("-o", "--output_file_name", help="provide output file name")
 
@@ -118,6 +157,7 @@ def main():
     consensus_path = args.consensus_folder_path
     tumor_only_path = args.test_folder_path
     ref_file = args.ref_folder_sdf
+    filter_string = args.filter
 
     tumor_only_manifest = map_sample_id_with_file(
         tumor_only_path
@@ -143,9 +183,17 @@ def main():
     tumor_consensus_sample_ID = tumor_consensus_sample_ID.sort_values(
         "sample_id", ascending=False
     )
+
+    if len(filter_string) > 0:  # check if filter string is provided or not
+        subprocess.run("mkdir filtered_vcfs", shell=True)  # make a folder to store filter vcfs
+        
     tumor_consensus_sample_ID["result"] = tumor_consensus_sample_ID.parallel_apply(
         lambda row: run_rtg(
-            row["sample_id"], row["test_input_file"], row["reference_file"], ref_file
+            row["sample_id"],
+            row["test_input_file"],
+            row["reference_file"],
+            ref_file,
+            filter_string,
         ),
         axis=1,
     )
@@ -199,6 +247,7 @@ def main():
         tmp_list = output_file.split(".")
         output_mean = tmp_list[0] + "_mean.tsv"
 
+    tumor_consensus_sample_ID["Filter_string"] = filter_string
     # write output file
     tumor_consensus_sample_ID.to_csv(output_file, sep="\t", index=False)
 
@@ -232,6 +281,7 @@ def main():
 
     mean_results_df = mean_results_df.round(3)
     mean_results_df["No. of samples"] = len(tumor_consensus_sample_ID.index)
+    mean_results_df["Filter_string"] = filter_string
     mean_results_df = mean_results_df.to_frame(name="Average_results")
 
     # write average results
