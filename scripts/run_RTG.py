@@ -77,7 +77,6 @@ def run_rtg(sample_id, tumor_only_file, consensus_only_files, ref_file, filter_s
             "&& "
             f"tabix filtered_vcfs/{sample_id}.filtered.vcf.gz "
         )
-        print(cmd_filter,file=sys.stderr)
 
         subprocess.run(cmd_filter, shell=True)
         path_filtered_files=os.getcwd()+"/"+"filtered_vcfs/"+sample_id+".filtered.vcf.gz"

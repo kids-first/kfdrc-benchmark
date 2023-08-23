@@ -9,7 +9,7 @@ inputs:
   test_folder: { doc: provide folder containing test vcf file with index files, type: Directory}
   consensus_folder_path: { doc: provide folder containing consensus vcf file with index files, type: Directory }
   ref_file: { doc: provide reference file in fasta format, type: 'File?' }
-  ram: { doc: provide ram (in GB) based on number of test files, type: 'int?', default: 7 } 
+  ram: { doc: provide ram (in GB) based on number of test files, type: 'int?', default: 14 } 
   output_file_name: { doc: provide output file name, type: string }
   filter_string: { doc: (optional) provide bcftool format filter_string example- INFO/DP>30 && INFO/AD>1, type: 'string?', default: '' }
   cores: { doc: provide cores to run samples in multiprocessing, type: 'int?', default: 8 }
