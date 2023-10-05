@@ -77,6 +77,7 @@ folder_name="results_rtg"
 data_fp=pd.DataFrame(extract_filter(folder_name,file_target,manifest_sample[0],sample_type),columns=["filter"])
 data_fp["filter"]=data_fp["filter"].astype('int')
 frequency_table_fp=data_fp['filter'].value_counts(bins=list(range(0,200,10)))
+frequency_table_fp=data_fp['filter'].value_counts(bins=list(range(0,200,10)))
 frequency_table_fp=frequency_table_fp.sort_index()
 frequency_table_fp.index=frequency_table_fp.index.astype(str)
 
