@@ -14,9 +14,9 @@ inputs:
   filter_string: { doc: (optional) provide bcftool format filter_string example- INFO/DP>30 && INFO/AD>1, type: 'string?', default: '' }
   cores: { doc: provide cores to run samples in multiprocessing, type: 'int?', default: 8 }
 
-  disable_plotting: {type: 'boolean?', default: False, doc: "Set to true to disable plotting tool" }
-  filter_string: { doc: provide bcftool format filter_string example- INFO/DP>30 && INFO/AD>1, type: 'string?', default: '%DP', inputBinding: { prefix: --filter, position: 2 } }
-  sample_manifest: { doc: provide sample with experimental strategy, type: File }
+  disable_plotting: {type: boolean, default: False, doc: "Set to true to disable plotting tool" }
+  filter_string: { doc: provide bcftool format like filter_string example- %DP, type: 'string?', default: '%DP' }
+  sample_manifest: { doc: provide sample with experimental strategy, type: 'File?' }
   output_file_name: { doc: provide output file name, type: 'string?', default: "plots" }
 
 outputs:
