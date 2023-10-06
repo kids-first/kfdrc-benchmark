@@ -17,7 +17,7 @@ inputs:
   disable_plotting: {type: boolean, default: False, doc: "Set to true to disable plotting tool" }
   plot_feature: { doc: provide bcftool format like filter_string example- %DP, type: 'string?', default: '%DP' }
   sample_manifest: { doc: provide sample with experimental strategy, type: 'File?' }
-  output_file_name: { doc: provide output file name, type: 'string?', default: "plots" }
+  output_name: { doc: provide output file name, type: 'string?', default: "plots" }
 
 outputs:
  benchmarking_tsv: { type: File, doc: benchmarking output in tsv format, outputSource: run_RTG/output_tsv }
@@ -51,6 +51,6 @@ steps:
       input_folder: run_RTG/results_dir
       filter_string: plot_feature
       sample_manifest: sample_manifest
-      output_file_name: output_file_name 
+      output_file_name: output_name 
     out: [WGS_png,WXS_png]             
 
