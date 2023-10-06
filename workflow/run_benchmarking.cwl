@@ -23,6 +23,8 @@ outputs:
  benchmarking_tsv: { type: File, doc: benchmarking output in tsv format, outputSource: run_RTG/output_tsv }
  average_result: { type: File, doc: average benchmarking results , outputSource: run_RTG/output_mean }
  rtg_results: { type: Directory, doc: directory containing output for all the samples from RTG, outputSource: run_RTG/results_dir }
+ plot_WGS: { type: File, doc: plot for WGS samples , outputSource: plots/WGS_png}
+ plot_WXS: { type: File, doc: plot for WXS samples, outputSource: plots/WXS_png }
 
 steps:
  convert_reference:
