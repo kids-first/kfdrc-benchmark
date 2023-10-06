@@ -15,7 +15,7 @@ inputs:
   cores: { doc: provide cores to run samples in multiprocessing, type: 'int?', default: 8 }
 
   disable_plotting: {type: boolean, default: False, doc: "Set to true to disable plotting tool" }
-  filter_string: { doc: provide bcftool format like filter_string example- %DP, type: 'string?', default: '%DP' }
+  plot_feature: { doc: provide bcftool format like filter_string example- %DP, type: 'string?', default: '%DP' }
   sample_manifest: { doc: provide sample with experimental strategy, type: 'File?' }
   output_file_name: { doc: provide output file name, type: 'string?', default: "plots" }
 
@@ -49,7 +49,7 @@ steps:
     in:
       disable_tool: disable_plotting
       input_folder: run_RTG/results_dir
-      filter_string: filter_string
+      filter_string: plot_feature
       sample_manifest: sample_manifest
       output_file_name: output_file_name 
     out: [WGS_png,WXS_png]             
