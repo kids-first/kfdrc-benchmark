@@ -13,7 +13,7 @@ parser = argparse.ArgumentParser()
 # Adding argument
 parser.add_argument("-i", "--input_folder", help="input RTG folder")
 parser.add_argument("-f", "--filter", help="filter to analysis")
-parser.add_argument("-f", "--sample_manifest", help="sample with experimental strategy ")
+parser.add_argument("-m", "--sample_manifest", help="sample with experimental strategy ")
 
 # Read arguments from command line
 args = parser.parse_args()
@@ -46,45 +46,46 @@ def extract_filter(folder_name,file_target,manifest_sample,sample_type):
         for i in os.listdir(folder_address):
             if i==file_target and manifest_sample[sample_id]==sample_type:
                 i=folder_address+"/"+file_target
-                print(i)
                 data_list.append(vcf_filter_extract(i))
                 break    
     return [item for sublist in data_list for item in sublist]
             
-file_target="tp.vcf.gz"
-sample_type="WGS"
-manifest_sample=pd.read_csv(args.sample_manifest,sep='\t',usecols=["sample_id","experimental_strategy"])
-manifest_sample=manifest_sample.set_index('sample_id').T.to_dict('records')
+#file_target="tp.vcf.gz"
+#sample_type="WGS"
 
-def plotting(folder_name,file_target,manifest_sample[0],sample_type):
-    data_tp=pd.DataFrame(extract_filter(folder_name,file_target,manifest_sample[0],sample_type),columns=["filter"])
+
+def plotting(folder_name,file_target,m_sample,sample_type):
+    data_tp=pd.DataFrame(extract_filter(folder_name,file_target,m_sample,sample_type),columns=["filter"])
     data_tp["filter"]=data_tp["filter"].astype('int')
     frequency_table_tp=data_tp['filter'].value_counts(bins=list(range(0,200,10)))
+    #frequency_table_tp=data_tp['filter'].value_counts(bins=100)
     frequency_table_tp=frequency_table_tp.sort_index()
     frequency_table_tp.index=frequency_table_tp.index.astype(str)
 
+    data_fp=pd.DataFrame(extract_filter(folder_name,"fp.vcf.gz",m_sample,sample_type),columns=["filter"])
+    data_fp["filter"]=data_fp["filter"].astype('int')
+    frequency_table_fp=data_fp['filter'].value_counts(bins=list(range(0,200,10)))
+    #frequency_table_tp=data_tp['filter'].value_counts(bins=100)
+    frequency_table_fp=frequency_table_fp.sort_index()
+    frequency_table_fp.index=frequency_table_fp.index.astype(str)
+
     title="Plot for filter: "+filter+ " "+sample_type+" samples"
+    file_name=file_target.split(".")[0]+"-"+sample_type+".png"
+    #yaxis= "No. of "+str(file_target.split(".")[0]).upper()+"s"
     plt.figure(figsize=(20,8))
-    plt.bar(frequency_table_tp.index, frequency_table_tp.values)
+    plt.bar(frequency_table_fp.index, frequency_table_fp.values,color='b')
+    plt.bar(frequency_table_tp.index,frequency_table_tp, bottom=frequency_table_fp, color='r')
     plt.xticks(fontsize=7)
+    plt.yticks(fontsize=10)
     plt.title(title)
     plt.xlabel("Range")
-    plt.ylabel("Number of True Positives")
-    plt.savefig('tp.png')
+    plt.legend(["False Positives", "True Positives"])
+    plt.ylabel("Number of Calls")
+    plt.savefig(file_name)
 
-file_target="fp.vcf.gz"
-folder_name="results_rtg"
-data_fp=pd.DataFrame(extract_filter(folder_name,file_target,manifest_sample[0],sample_type),columns=["filter"])
-data_fp["filter"]=data_fp["filter"].astype('int')
-frequency_table_fp=data_fp['filter'].value_counts(bins=list(range(0,200,10)))
-frequency_table_fp=data_fp['filter'].value_counts(bins=list(range(0,200,10)))
-frequency_table_fp=frequency_table_fp.sort_index()
-frequency_table_fp.index=frequency_table_fp.index.astype(str)
+manifest_sample=pd.read_csv(args.sample_manifest,sep='\t',usecols=["sample_id","experimental_strategy"])
+manifest_sample=manifest_sample.set_index('sample_id').T.to_dict('records')
 
-plt.figure(figsize=(20,8))
-plt.bar(frequency_table_fp.index, frequency_table_fp.values)
-plt.xticks(fontsize=7)
-plt.title(title)
-plt.xlabel("Range")
-plt.ylabel("Number of False Positives")
-plt.savefig('fp.png')
+plotting(folder_name,"tp.vcf.gz",manifest_sample[0],"WGS")
+plotting(folder_name,"tp.vcf.gz",manifest_sample[0],"WXS")
+
