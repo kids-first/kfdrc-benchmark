@@ -52,8 +52,8 @@ def extract_filter(folder_name,file_target,manifest_sample,sample_type):
                 break    
     return [item for sublist in data_list for item in sublist]
             
-def plotting(folder_name,file_target,m_sample,sample_type):
-    data_tp=pd.DataFrame(extract_filter(folder_name,file_target,m_sample,sample_type),columns=["filter"])
+def plotting(folder_name,m_sample,sample_type):
+    data_tp=pd.DataFrame(extract_filter(folder_name,"tp.vcf.gz",m_sample,sample_type),columns=["filter"])
     data_tp["filter"]=data_tp["filter"].astype('int')
     frequency_table_tp=data_tp['filter'].value_counts(bins=list(range(0,200,10)))
     frequency_table_tp=frequency_table_tp.sort_index()
@@ -81,6 +81,6 @@ def plotting(folder_name,file_target,m_sample,sample_type):
 manifest_sample=pd.read_csv(args.sample_manifest,sep='\t',usecols=["sample_id","experimental_strategy"])
 manifest_sample=manifest_sample.set_index('sample_id').T.to_dict('records')
 
-plotting(folder_name,"tp.vcf.gz",manifest_sample[0],"WGS")
-plotting(folder_name,"tp.vcf.gz",manifest_sample[0],"WXS")
+plotting(folder_name,manifest_sample[0],"WGS") # plot WGS samples
+plotting(folder_name,manifest_sample[0],"WXS") # plot WXS samples
 
