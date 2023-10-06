@@ -13,6 +13,12 @@ inputs:
   output_file_name: { doc: provide output file name, type: string }
   filter_string: { doc: (optional) provide bcftool format filter_string example- INFO/DP>30 && INFO/AD>1, type: 'string?', default: '' }
   cores: { doc: provide cores to run samples in multiprocessing, type: 'int?', default: 8 }
+
+  disable_plotting: {type: 'boolean?', default: False, doc: "Set to true to disable plotting tool" }
+  filter_string: { doc: provide bcftool format filter_string example- INFO/DP>30 && INFO/AD>1, type: 'string?', default: '%DP', inputBinding: { prefix: --filter, position: 2 } }
+  sample_manifest: { doc: provide sample with experimental strategy, type: File }
+  output_file_name: { doc: provide output file name, type: 'string?', default: "plots" }
+
 outputs:
  benchmarking_tsv: { type: File, doc: benchmarking output in tsv format, outputSource: run_RTG/output_tsv }
  average_result: { type: File, doc: average benchmarking results , outputSource: run_RTG/output_mean }
@@ -36,5 +42,15 @@ steps:
        ram: ram
        cores: cores
     out:
-       [ output_tsv, output_mean, results_dir, filter_folder]          
+       [ output_tsv, output_mean, results_dir, filter_folder]  
+ plots:
+    run: ../tools/plotting.cwl
+    when : $(inputs.disable_tool != true)
+    in:
+      disable_tool: disable_plotting
+      input_folder: run_RTG/results_dir
+      filter_string: filter_string
+      sample_manifest: sample_manifest
+      output_file_name: output_file_name 
+    out: [WGS_png,WXS_png]             
 

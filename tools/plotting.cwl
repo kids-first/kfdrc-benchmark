@@ -22,6 +22,9 @@ arguments:
   shellQuote: false 
 
 inputs:
+    #just kill switch to connect the graph
+    disable_workflow: {type: 'boolean', doc: "bring it here to connect graph"}
+
     input_folder: { doc: provide RTG folder, type: Directory, inputBinding: { prefix: --input_folder, position: 2} }
     filter_string: { doc: provide bcftool format filter_string example- INFO/DP>30 && INFO/AD>1, type: 'string?', default: '%DP', inputBinding: { prefix: --filter, position: 2 } }
     sample_manifest: { doc: provide sample with experimental strategy, type: File, inputBinding: { prefix: --sample_manifest, position: 2} }
