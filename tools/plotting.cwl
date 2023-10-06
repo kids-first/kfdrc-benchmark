@@ -25,14 +25,15 @@ inputs:
     input_folder: { doc: provide RTG folder, type: Directory, inputBinding: { prefix: --input_folder, position: 2} }
     filter_string: { doc: provide bcftool format filter_string example- INFO/DP>30 && INFO/AD>1, type: 'string?', default: '%DP', inputBinding: { prefix: --filter, position: 2 } }
     sample_manifest: { doc: provide sample with experimental strategy, type: File, inputBinding: { prefix: --sample_manifest, position: 2} }
+    output_file_name: { doc: provide output file name, type: string, inputBinding: { prefix: --output_file_name, position: 2 } }
 outputs:
-   tp_png:
+   WGS_png:
     type: File
     outputBinding:
-     glob: tp.png
+     glob: $(inputs.output_file_name).WGS.png
     doc: Bar plot for TPs 
-   fp_png:
+   WXS_png:
     type: File
     outputBinding:
-     glob: fp.png
+     glob: $(inputs.output_file_name).WXS.png
     doc: Bar plot for FPs 

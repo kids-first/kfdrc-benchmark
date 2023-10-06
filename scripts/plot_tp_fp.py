@@ -14,11 +14,13 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--input_folder", help="input RTG folder")
 parser.add_argument("-f", "--filter", help="filter to analysis")
 parser.add_argument("-m", "--sample_manifest", help="sample with experimental strategy ")
+parser.add_argument("-o", "--output_file_name", help="output file name")
 
 # Read arguments from command line
 args = parser.parse_args()
 folder_name=args.input_folder
 filter=args.filter
+output_file_name=args.output_file_name
 
 def vcf_to_pandas(file):
     vcf_data=[]
@@ -50,28 +52,21 @@ def extract_filter(folder_name,file_target,manifest_sample,sample_type):
                 break    
     return [item for sublist in data_list for item in sublist]
             
-#file_target="tp.vcf.gz"
-#sample_type="WGS"
-
-
 def plotting(folder_name,file_target,m_sample,sample_type):
     data_tp=pd.DataFrame(extract_filter(folder_name,file_target,m_sample,sample_type),columns=["filter"])
     data_tp["filter"]=data_tp["filter"].astype('int')
     frequency_table_tp=data_tp['filter'].value_counts(bins=list(range(0,200,10)))
-    #frequency_table_tp=data_tp['filter'].value_counts(bins=100)
     frequency_table_tp=frequency_table_tp.sort_index()
     frequency_table_tp.index=frequency_table_tp.index.astype(str)
 
     data_fp=pd.DataFrame(extract_filter(folder_name,"fp.vcf.gz",m_sample,sample_type),columns=["filter"])
     data_fp["filter"]=data_fp["filter"].astype('int')
     frequency_table_fp=data_fp['filter'].value_counts(bins=list(range(0,200,10)))
-    #frequency_table_tp=data_tp['filter'].value_counts(bins=100)
     frequency_table_fp=frequency_table_fp.sort_index()
     frequency_table_fp.index=frequency_table_fp.index.astype(str)
 
     title="Plot for filter: "+filter+ " "+sample_type+" samples"
-    file_name=file_target.split(".")[0]+"-"+sample_type+".png"
-    #yaxis= "No. of "+str(file_target.split(".")[0]).upper()+"s"
+    file_name=output_file_name+"."+sample_type+".png"
     plt.figure(figsize=(20,8))
     plt.bar(frequency_table_fp.index, frequency_table_fp.values,color='b')
     plt.bar(frequency_table_tp.index,frequency_table_tp, bottom=frequency_table_fp, color='r')
