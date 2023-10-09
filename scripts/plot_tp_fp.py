@@ -22,10 +22,10 @@ args = parser.parse_args()
 folder_name=args.input_folder
 filter=args.filter
 output_file_name=args.output_file_name
-interval = list(map(float, args.interval_list))
+interval = list(map(float, args.interval_list)) # start end bin_size
 if len(interval) !=3:
     raise Exception("Range list should have 3 numeric ( int or float) in the order: start, end and bin size. Start < End and bin << (End - Start)")
-print(interval)
+
 def vcf_to_pandas(file):
     vcf_data=[]
     upper_header=[]
@@ -54,20 +54,21 @@ def extract_filter(folder_name,file_target,manifest_sample,sample_type):
                 i=folder_address+"/"+file_target
                 data_list.append(vcf_filter_extract(i))
                 break    
-    return [item for sublist in data_list for item in sublist]
+    flat_list= [item for sublist in data_list for item in sublist]   
+    clean_list=[item for item in flat_list if item != '.']
+    return clean_list
+
+def process_data(folder_name,file_target,m_sample,sample_type):
+    data=pd.DataFrame(extract_filter(folder_name,"tp.vcf.gz",m_sample,sample_type),columns=["filter"])
+    data["filter"]=data["filter"].astype('int')
+    frequency_table=data['filter'].value_counts(bins=list(np.arange(interval[0],interval[1]+interval[2],interval[2])))
+    frequency_table=frequency_table.sort_index()
+    frequency_table.index=frequency_table.index.astype(str)
+    return frequency_table
             
 def plotting(folder_name,m_sample,sample_type):
-    data_tp=pd.DataFrame(extract_filter(folder_name,"tp.vcf.gz",m_sample,sample_type),columns=["filter"])
-    data_tp["filter"]=data_tp["filter"].astype('int')
-    frequency_table_tp=data_tp['filter'].value_counts(bins=list(np.arange(interval[0],interval[1]+interval[2],interval[2])))
-    frequency_table_tp=frequency_table_tp.sort_index()
-    frequency_table_tp.index=frequency_table_tp.index.astype(str)
-
-    data_fp=pd.DataFrame(extract_filter(folder_name,"fp.vcf.gz",m_sample,sample_type),columns=["filter"])
-    data_fp["filter"]=data_fp["filter"].astype('int')
-    frequency_table_fp=data_fp['filter'].value_counts(bins=list(np.arange(interval[0],interval[1]+interval[2],interval[2])))
-    frequency_table_fp=frequency_table_fp.sort_index()
-    frequency_table_fp.index=frequency_table_fp.index.astype(str)
+    frequency_table_tp=process_data(folder_name,"tp.vcf.gz",m_sample,sample_type)
+    frequency_table_fp=process_data(folder_name,"fp.vcf.gz",m_sample,sample_type)
 
     title="Plot for filter: "+filter+ " "+sample_type+" samples"
     file_name=output_file_name+"."+sample_type+".png"
