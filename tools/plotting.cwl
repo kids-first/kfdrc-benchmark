@@ -26,7 +26,7 @@ inputs:
     disable_tool: {type: 'boolean', doc: "bring it here to connect graph"}
 
     input_folder: { doc: provide RTG folder, type: Directory, inputBinding: { prefix: --input_folder, position: 2} }
-    filter_string: { doc: provide bcftool format filter_string example- INFO/DP>30 && INFO/AD>1, type: 'string?', default: '%DP', inputBinding: { prefix: --filter, position: 2 } }
+    filter_string: { doc: provide filter string for this bcftool cmd-> "bcftools query -f'{your string}'" Example- "%DP" or "%AD{1}/%DP" for vaf,%AF,%GERMQ , type: 'string?', default: '%DP', inputBinding: { prefix: --filter, position: 2 } }
     sample_manifest: { doc: provide sample with experimental strategy, type: File, inputBinding: { prefix: --sample_manifest, position: 2} }
     output_file_name: { doc: provide output file name, type: string, inputBinding: { prefix: --output_file_name, position: 2 } }
     range: {doc: Provide start end and bin size in the same order Example- 0 200 10 for depth, type: 'string[]', inputBinding: { prefix: --interval_list, position: 2} }

@@ -56,7 +56,8 @@ def extract_filter(folder_name,file_target,manifest_sample,sample_type):
                 break    
     flat_list= [item for sublist in data_list for item in sublist]   
     clean_list=[item for item in flat_list if item != '.']
-    return clean_list
+    divide_operation_vaf=[float(item.split("/")[0])/float(item.split("/")[1]) if "/" in item else item for item in clean_list ]
+    return divide_operation_vaf
 
 def process_data(folder_name,file_target,m_sample,sample_type):
     data=pd.DataFrame(extract_filter(folder_name,"tp.vcf.gz",m_sample,sample_type),columns=["filter"])
