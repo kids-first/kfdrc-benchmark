@@ -2,7 +2,7 @@ import os
 import gzip
 import pandas as pd
 import subprocess
-import numpy
+import numpy as np
 from matplotlib import pyplot as plt
 import argparse
 
@@ -15,13 +15,17 @@ parser.add_argument("-i", "--input_folder", help="input RTG folder")
 parser.add_argument("-f", "--filter", help="filter to analysis")
 parser.add_argument("-m", "--sample_manifest", help="sample with experimental strategy ")
 parser.add_argument("-o", "--output_file_name", help="output file name")
+parser.add_argument("-l", "--interval_list", nargs="+",help="output file name")
 
 # Read arguments from command line
 args = parser.parse_args()
 folder_name=args.input_folder
 filter=args.filter
 output_file_name=args.output_file_name
-
+interval = list(map(float, args.interval_list))
+if len(interval) !=3:
+    raise Exception("Range list should have 3 numeric ( int or float) in the order: start, end and bin size. Start < End and bin << (End - Start)")
+print(interval)
 def vcf_to_pandas(file):
     vcf_data=[]
     upper_header=[]
@@ -55,13 +59,13 @@ def extract_filter(folder_name,file_target,manifest_sample,sample_type):
 def plotting(folder_name,m_sample,sample_type):
     data_tp=pd.DataFrame(extract_filter(folder_name,"tp.vcf.gz",m_sample,sample_type),columns=["filter"])
     data_tp["filter"]=data_tp["filter"].astype('int')
-    frequency_table_tp=data_tp['filter'].value_counts(bins=list(range(0,200,10)))
+    frequency_table_tp=data_tp['filter'].value_counts(bins=list(np.arange(interval[0],interval[1]+interval[2],interval[2])))
     frequency_table_tp=frequency_table_tp.sort_index()
     frequency_table_tp.index=frequency_table_tp.index.astype(str)
 
     data_fp=pd.DataFrame(extract_filter(folder_name,"fp.vcf.gz",m_sample,sample_type),columns=["filter"])
     data_fp["filter"]=data_fp["filter"].astype('int')
-    frequency_table_fp=data_fp['filter'].value_counts(bins=list(range(0,200,10)))
+    frequency_table_fp=data_fp['filter'].value_counts(bins=list(np.arange(interval[0],interval[1]+interval[2],interval[2])))
     frequency_table_fp=frequency_table_fp.sort_index()
     frequency_table_fp.index=frequency_table_fp.index.astype(str)
 

@@ -29,6 +29,8 @@ inputs:
     filter_string: { doc: provide bcftool format filter_string example- INFO/DP>30 && INFO/AD>1, type: 'string?', default: '%DP', inputBinding: { prefix: --filter, position: 2 } }
     sample_manifest: { doc: provide sample with experimental strategy, type: File, inputBinding: { prefix: --sample_manifest, position: 2} }
     output_file_name: { doc: provide output file name, type: string, inputBinding: { prefix: --output_file_name, position: 2 } }
+    range: {doc: Provide start end and bin size, type: 'int[]?', inputBinding: { prefix: --interval_list, position: 2} }
+    
 outputs:
    WGS_png:
     type: File
