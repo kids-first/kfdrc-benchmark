@@ -60,7 +60,7 @@ def extract_filter(folder_name,file_target,manifest_sample,sample_type):
 
 def process_data(folder_name,file_target,m_sample,sample_type):
     data=pd.DataFrame(extract_filter(folder_name,"tp.vcf.gz",m_sample,sample_type),columns=["filter"])
-    data["filter"]=data["filter"].astype('int')
+    data["filter"]=data["filter"].astype('float')
     frequency_table=data['filter'].value_counts(bins=list(np.arange(interval[0],interval[1]+interval[2],interval[2])))
     frequency_table=frequency_table.sort_index()
     frequency_table.index=frequency_table.index.astype(str)
