@@ -80,7 +80,7 @@ def run_rtg(sample_id, tumor_only_file, consensus_only_files, ref_file, filter_s
 
         print("Applying provided filter on: ", sample_id, file=sys.stderr)
         try:
-            output=subprocess.run(cmd_filter,shell=True,stderr=subprocess.STDOUT)
+            subprocess.check_output(cmd_filter,shell=True,stderr=subprocess.STDOUT,universal_newlines=True)
         except subprocess.CalledProcessError as exc:
             print("Status : Filter FAIL", exc.returncode, exc.output,file=sys.stderr)
         else:
