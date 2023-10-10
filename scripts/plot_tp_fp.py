@@ -84,9 +84,12 @@ def plotting(folder_name,m_sample,sample_type):
     plt.ylabel("Number of Calls")
     plt.savefig(file_name)
 
-manifest_sample=pd.read_csv(args.sample_manifest,sep='\t',usecols=["sample_id","experimental_strategy"])
-manifest_sample=manifest_sample.set_index('sample_id').T.to_dict('records')
+def main():
+    manifest_sample=pd.read_csv(args.sample_manifest,sep='\t',usecols=["sample_id","experimental_strategy"])
+    manifest_sample=manifest_sample.set_index('sample_id').T.to_dict('records')
 
-plotting(folder_name,manifest_sample[0],"WGS") # plot WGS samples
-plotting(folder_name,manifest_sample[0],"WXS") # plot WXS samples
+    plotting(folder_name,manifest_sample[0],"WGS") # plot WGS samples
+    plotting(folder_name,manifest_sample[0],"WXS") # plot WXS samples
 
+if __name__ == "__main__":
+    main()
