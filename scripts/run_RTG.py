@@ -78,7 +78,14 @@ def run_rtg(sample_id, tumor_only_file, consensus_only_files, ref_file, filter_s
             f"tabix filtered_vcfs/{sample_id}.filtered.vcf.gz "
         )
 
-        subprocess.run(cmd_filter, shell=True)
+        print("Applying provided filter on: ", sample_id, file=sys.stderr)
+        try:
+            output=subprocess.run(cmd_filter,shell=True,stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as exc:
+            print("Status : Filter FAIL", exc.returncode, exc.output,file=sys.stderr)
+        else:
+            print("Filter output: \n{}\n".format(output),file=sys.stderr)    
+        
         path_filtered_files=os.getcwd()+"/"+"filtered_vcfs/"+sample_id+".filtered.vcf.gz"
         cmd = (
             "rtg vcfeval "
