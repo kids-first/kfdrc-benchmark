@@ -19,8 +19,8 @@ inputs:
   disable_plotting: {type: boolean, default: True, doc: "Set to true to disable plotting tool" }
   plot_feature: { doc: provide bcftool format like filter_string example- %DP, type: 'string?', default: '%DP' }
   sample_manifest: { doc: provide sample with experimental strategy, type: 'File?' }
-  output_name: { doc: provide output file name, type: 'string?', default: "plots" }
   plot_range: {doc: Provide start end and bin size in the same order Example- 0 200 10 for depth,default: ["0","200","10"] , type: 'string[]' }
+  filter_name: { doc: provide filter name, type: 'string?',default: "filter" }
 
 outputs:
  benchmarking_tsv: { type: File, doc: benchmarking output in tsv format, outputSource: run_RTG/output_tsv }
@@ -28,6 +28,7 @@ outputs:
  rtg_results: { type: Directory, doc: directory containing output for all the samples from RTG, outputSource: run_RTG/results_dir }
  plot_WGS: { type: 'File?', doc: plot for WGS samples , outputSource: plots/WGS_png}
  plot_WXS: { type: 'File?', doc: plot for WXS samples, outputSource: plots/WXS_png }
+ 
  
 steps:
  convert_reference:
@@ -56,7 +57,8 @@ steps:
       input_folder: run_RTG/results_dir
       filter_string: plot_feature
       sample_manifest: sample_manifest
-      range: plot_range
-      output_file_name: output_name 
+      range: plot_range 
+      plot_name: output_file_name
+      filter_name: filter_name
     out: [WGS_png,WXS_png]             
 
