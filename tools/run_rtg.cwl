@@ -57,7 +57,7 @@ outputs:
    results_dir:
     type: Directory
     outputBinding:
-      glob: "results_rtg"
+      glob: "*_results_rtg"
     doc: directory containing output for all the samples from RTG
    filter_folder:
     type: 'Directory?'

@@ -42,7 +42,14 @@ def map_sample_id_with_file(path):
     return pd.DataFrame(sample_id_files, columns=["sample_id", "file_path"])
 
 
-def run_rtg(sample_id, tumor_only_file, consensus_only_files, ref_file, filter_string):
+def run_rtg(
+    sample_id,
+    tumor_only_file,
+    consensus_only_files,
+    ref_file,
+    filter_string,
+    result_folder_name,
+):
     """
     This function can filter VCFs based on filter string (in bcftool format) and will run rtg to return result as confusion matrix/F1 scores
     """
@@ -68,7 +75,6 @@ def run_rtg(sample_id, tumor_only_file, consensus_only_files, ref_file, filter_s
         return [None, None, None, None, None, None, None, None]
 
     if len(filter_string) > 0:  # run with filter string provided
-
         cmd_filter = (
             "bcftools view -Oz --thread 4 "
             f"-i '{filter_string}' "
@@ -78,8 +84,22 @@ def run_rtg(sample_id, tumor_only_file, consensus_only_files, ref_file, filter_s
             f"tabix filtered_vcfs/{sample_id}.filtered.vcf.gz "
         )
 
-        subprocess.run(cmd_filter, shell=True)
-        path_filtered_files=os.getcwd()+"/"+"filtered_vcfs/"+sample_id+".filtered.vcf.gz"
+        print("Applying provided filter on: ", sample_id, file=sys.stderr)
+        try:
+            output = subprocess.check_output(
+                cmd_filter,
+                shell=True,
+                stderr=subprocess.STDOUT,
+                universal_newlines=True,
+            )
+        except subprocess.CalledProcessError as exc:
+            print("Status : Filter FAIL", exc.returncode, exc.output, file=sys.stderr)
+        else:
+            print("Filter output: \n{}\n".format(output), file=sys.stderr)
+
+        path_filtered_files = (
+            os.getcwd() + "/" + "filtered_vcfs/" + sample_id + ".filtered.vcf.gz"
+        )
         cmd = (
             "rtg vcfeval "
             f"--baseline={consensus_only_files}  "
@@ -88,7 +108,7 @@ def run_rtg(sample_id, tumor_only_file, consensus_only_files, ref_file, filter_s
             f"--template {ref_file} "
             "--all-records "
             "--no-roc "
-            f"--output results_rtg/{sample_id}_rtg"
+            f"--output {result_folder_name}/{sample_id}_rtg"
         )
     else:  # run without the filter
         cmd = (
@@ -99,7 +119,7 @@ def run_rtg(sample_id, tumor_only_file, consensus_only_files, ref_file, filter_s
             f"--template {ref_file} "
             "--all-records "
             "--no-roc "
-            f"--output results_rtg/{sample_id}_rtg"
+            f"--output {result_folder_name}/{sample_id}_rtg"
         )
     # Run RTG on proper inputs
     print("Running RTG on: ", sample_id, file=sys.stderr)
@@ -185,8 +205,22 @@ def main():
     )
 
     if len(filter_string) > 0:  # check if filter string is provided or not
-        subprocess.run("mkdir filtered_vcfs", shell=True)  # make a folder to store filter vcfs
-        
+        subprocess.run(
+            "mkdir filtered_vcfs", shell=True
+        )  # make a folder to store filter vcfs
+
+    output_name = args.output_file_name
+    if not output_name.endswith(".tsv"):
+        output_mean = output_name + "_mean.tsv"
+        output_file = output_name + ".tsv"
+        result_folder_name = output_name + "_results_rtg"
+
+    else:
+        output_file = output_name
+        tmp_list = output_file.split(".")
+        output_mean = tmp_list[0] + "_mean.tsv"
+        result_folder_name = tmp_list[0] + "_results_rtg"
+
     tumor_consensus_sample_ID["result"] = tumor_consensus_sample_ID.parallel_apply(
         lambda row: run_rtg(
             row["sample_id"],
@@ -194,6 +228,7 @@ def main():
             row["reference_file"],
             ref_file,
             filter_string,
+            result_folder_name,
         ),
         axis=1,
     )
@@ -237,15 +272,6 @@ def main():
     tumor_consensus_sample_ID["reference_file"] = tumor_consensus_sample_ID[
         "reference_file"
     ].apply(clean_filename)
-
-    if not args.output_file_name.endswith(".tsv"):
-        output_mean = args.output_file_name + "_mean.tsv"
-        output_file = args.output_file_name + ".tsv"
-
-    else:
-        output_file = args.output_file_name
-        tmp_list = output_file.split(".")
-        output_mean = tmp_list[0] + "_mean.tsv"
 
     tumor_consensus_sample_ID["Filter_string"] = filter_string
     # write output file
