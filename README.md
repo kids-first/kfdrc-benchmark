@@ -12,7 +12,7 @@ This repo is made up of 3 CWL tools. The description for these tools are as foll
 
 Here is figure that depict structure of this workflow
 
-![Benchmarking schematic](https://github.com/kids-first/kfdrc-benchmark/tree/main/docs/Benchmarking_wf_schematic.png)
+![Benchmarking schematic](https://github.com/kids-first/kfdrc-benchmark/tree/documentation/docs/Benchmarking_wf_schematic.png)
 
 ### Inputs
 
