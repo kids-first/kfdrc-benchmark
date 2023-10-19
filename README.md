@@ -4,23 +4,23 @@ Benchmarking workflow computes confusion matrix with f1 score for target VCFs us
 
 ### Repo Description
 
-This repo is made up of 3 CWL tools. The description for these tools are as follows:
+This workflow have 3 CWL based tools. The description for these tools are as follows:
 
-- convert_reference_SDF:
-- run_rtg_tools:
+- convert_reference_SDF: This converts fasta file into sdf format required for RTG as an input
+- run_rtg_tools:: User have to provide all the target vcf files in a folder and all the gold standard in another folder. This tool will create a manifest using target vcfs by pulling sample id from vcf header and will aim to look for corresponding gold standard vcfs.  This tool can also filter target vcfs if filter string is provided using bcftools. Filtering is optional, and once calls are filtered, RTG tool computes the confusion  matrix on new filtered vcfs or target vcfs ( depends if filter string is provided or not) using the gold standard provided. 
 - bar plots:
 
 Here is figure that depict structure of this workflow
 
-![Benchmarking schematic](https://github.com/kids-first/kfdrc-benchmark/tree/documentation/docs/Benchmarking_wf_schematic.png)
+![Benchmarking schematic](https://github.com/kids-first/kfdrc-benchmark/tree/main/docs/Benchmarking_wf_schematic.png)
 
 ### Inputs
 
 ```
-inputs:
-# convert_reference_sdf
+convert_reference_sdf
   ref_file: { doc: provide reference file in fasta format, type: 'File?' } 
-#rtg tool
+
+RTG Tool
   test_folder: { doc: provide folder containing test vcf file with index files, type: Directory}
   consensus_folder_path: { doc: provide folder containing consensus vcf file with index files, type: Directory }
   ram: { doc: provide ram (in GB) based on number of test files, type: 'int?', default: 14 } 
@@ -28,7 +28,7 @@ inputs:
   filter_string: { doc: (optional) provide bcftool format filter_string example- INFO/DP>30 && INFO/AD>1, type: 'string?', default: '' }
   cores: { doc: provide cores to run samples in multiprocessing, type: 'int?', default: 8 }
 
-#plotting
+Bar Plots
   disable_plotting: {type: boolean, default: True, doc: "Set to true to disable plotting tool" }
   plot_feature: { doc: provide bcftool format like filter_string example- %DP, type: 'string?', default: '%DP' }
   sample_manifest: { doc: provide sample with experimental strategy, type: 'File?' }
@@ -39,10 +39,12 @@ inputs:
 
 ### Outputs
 ```
-outputs:
+RTG Tool
  benchmarking_tsv: { type: File, doc: benchmarking output in tsv format, outputSource: run_RTG/output_tsv }
  average_result: { type: File, doc: average benchmarking results , outputSource: run_RTG/output_mean }
  rtg_results: { type: Directory, doc: directory containing output for all the samples from RTG, outputSource: run_RTG/results_dir }
+
+Bar Plots 
  plot_WGS: { type: 'File?', doc: plot for WGS samples , outputSource: plots/WGS_png}
  plot_WXS: { type: 'File?', doc: plot for WXS samples, outputSource: plots/WXS_png }
 ```
