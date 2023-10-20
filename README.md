@@ -1,18 +1,18 @@
 # D3b Bixu VCF benchmarking workflow
 
-Benchmarking workflow computes confusion matrix with f1 score for target VCFs using provided gold standard VCF files. It can also filter calls by providing bcftool like string for ex `DP > 10`. Additionally, It can prepare stacked bar plots with True Positives, False Positives together for specific numerical filters.
+Benchmarking workflow computes confusion matrix with f1 score for target VCFs using provided gold standard VCF files. It can also filter calls by providing bcftool like string (Ex `DP > 10`). Additionally, it can prepare stacked bar plots with true positives, false positives together for specific numerical filters.
 
 ### Repo Description
 
 This workflow have 3 CWL based tools. The description for these tools are as follows:
 
-- convert_reference_SDF: This converts fasta file into sdf format required for RTG as an input.
+- Convert_reference_SDF: This converts fasta file into sdf format required for RTG as an input.
 
-- run_rtg_tools:: User have to provide all the target vcf files in a folder and all the gold standard in another folder. This tool will create a manifest using target vcfs by pulling sample id from vcf header and will aim to look for corresponding gold standard vcfs.  This tool can also filter target vcfs if filter string is provided. Filtering is optional, and once calls are filtered, RTG tool computes the confusion matrix on new filtered vcfs or target vcfs (depends if filter string is provided or not) using the gold standard provided.
+- Run_rtg_tools: User have to provide all the target vcf files in a folder and all the gold standard in another folder. This tool will create a manifest using target vcfs by pulling sample id from vcf header and will aim to look for corresponding gold standard vcfs.  This tool can also filter target vcfs if filter string is provided. Filtering is optional, and once calls are filtered, RTG tool computes the confusion matrix on new filtered vcfs or target vcfs (depends if filter string is provided or not) using the gold standard provided.
 
-- bar plots: This tool takes rtg_results folder as input that contains tp.vcf.gz & fp.vcf.gz for all desered samples and manifest for samples that informs this tool about experimental strategy. This tool will loop over all the sample folders and will pull TPs & FPs. furthur, it will plot stack bar plots for WGS and WXS 
+- Bar plots: This tool takes rtg_results folder as input that contains tp.vcf.gz & fp.vcf.gz for all desered samples and manifest for samples that informs this tool about experimental strategy. This tool will loop over all the sample folders and will pull TPs & FPs. furthur, it will plot stack bar plots for WGS and WXS 
 
-Here is figure that depict skeleton of this workflow
+Here is figure that depicts skeleton of this workflow
 
 ![Benchmarking schematic](https://github.com/kids-first/kfdrc-benchmark/tree/main/docs/Benchmarking_wf_schematic.png)
 
@@ -53,7 +53,7 @@ Bar Plots
 
 ### More details
 
-[Test run 1](https://cavatica.sbgenomics.com/u/d3b-bixu/kf-tumor-only-wf-dev/tasks/260d89bd-5581-4d69-a1f1-afc3673e7277/)
-[Docker for benchmarking](https://github.com/d3b-center/bixtools/blob/master/tumor-only-benchmarking/1.0.0/Dockerfile)
+Test [run 1](https://cavatica.sbgenomics.com/u/d3b-bixu/kf-tumor-only-wf-dev/tasks/260d89bd-5581-4d69-a1f1-afc3673e7277/)
+Benchmarking docker:[link](https://github.com/d3b-center/bixtools/blob/master/tumor-only-benchmarking/1.0.0/Dockerfile)
 
-Plotting tool also lives independently to provide flexibility and save cost for analysis if required. Here is the [link](https://cavatica.sbgenomics.com/u/d3b-bixu/kf-tumor-only-wf-dev/tasks/98fcf1b6-97ce-44e0-9075-a90ba7dc3c38/)
+Plotting tool also lives independently to provide flexibility and save cost for analysis if required. Here is the [link to app](https://cavatica.sbgenomics.com/u/d3b-bixu/kf-tumor-only-wf-dev/apps/filter_plotting/12) & [link to test run](https://cavatica.sbgenomics.com/u/d3b-bixu/kf-tumor-only-wf-dev/tasks/98fcf1b6-97ce-44e0-9075-a90ba7dc3c38/)
