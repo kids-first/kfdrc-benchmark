@@ -1,7 +1,7 @@
 cwlVersion: v1.2
 class: CommandLineTool
 id: plot_tp_fp
-label: bar plot for tp and fp 
+label: bar_plots 
 doc: This tools maps test files with consensus and runs rtg for samples within test_folder
 requirements:
 - class: ShellCommandRequirement
