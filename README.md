@@ -53,7 +53,7 @@ Bar Plots
 
 ### More details
 
-Test [run 1](https://cavatica.sbgenomics.com/u/d3b-bixu/kf-tumor-only-wf-dev/tasks/260d89bd-5581-4d69-a1f1-afc3673e7277/)
-Benchmarking docker:[link](https://github.com/d3b-center/bixtools/blob/master/tumor-only-benchmarking/1.0.0/Dockerfile)
+- Test [run 1](https://cavatica.sbgenomics.com/u/d3b-bixu/kf-tumor-only-wf-dev/tasks/260d89bd-5581-4d69-a1f1-afc3673e7277/) 
+- Benchmarking docker:[link](https://github.com/d3b-center/bixtools/blob/master/tumor-only-benchmarking/1.0.0/Dockerfile)
 
 Plotting tool also lives independently to provide flexibility and save cost for analysis if required. Here is the [link to app](https://cavatica.sbgenomics.com/u/d3b-bixu/kf-tumor-only-wf-dev/apps/filter_plotting/12) & [link to test run](https://cavatica.sbgenomics.com/u/d3b-bixu/kf-tumor-only-wf-dev/tasks/98fcf1b6-97ce-44e0-9075-a90ba7dc3c38/)
