@@ -12,7 +12,7 @@ This workflow have 3 CWL based tools. The description for these tools are as fol
 
 - Bar plots: This tool take s rtg_results folder as input that contains tp.vcf.gz & fp.vcf.gz for all desired samples, plot feature (Example: `[%DP ]`) and a manifest for samples that informs this tool about experimental strategy. This tool will loop over all the sample folders and will pull TPs & FPs. Further, it will plot stack bar plots for WGS and WXS separately.
 
-Plotting tool also lives independently to provide flexibility and save cost for analysis if required. Here is the [link to app](https://cavatica.sbgenomics.com/u/d3b-bixu/kf-tumor-only-wf-dev/apps/filter_plotting) 
+Plotting tool also lives independently to provide flexibility and save cost for analysis if required. Here is the link to [plotting tool](https://cavatica.sbgenomics.com/u/d3b-bixu/kf-tumor-only-wf-dev/apps/filter_plotting) 
 
 ### Deployment
 
@@ -42,7 +42,6 @@ Bar Plots
   sample_manifest: Provide sample with experimental strategy
   plot_range: Provide start end and bin size in the same order Example- 0 200 10 for depth, default: ["0","200","10"] 
   filter_name: provide filter name
-
 ```
 
 ### Outputs
@@ -59,10 +58,11 @@ Bar Plots
 
 ### More details
 
-- Benchmarking docker:[link](https://github.com/d3b-center/bixtools/blob/master/tumor-only-benchmarking/1.0.0/Dockerfile)
+- [Benchmarking docker](https://github.com/d3b-center/bixtools/blob/master/tumor-only-benchmarking/1.0.0/Dockerfile):
+
+It can also be pulled on CLI using following command:
 ```
 Docker Pull docker pull pgc-images.sbgenomics.com/d3b-bixu/tumor-only-benchmarking:1.0.0
 ```
-- [link to test run](https://cavatica.sbgenomics.com/u/d3b-bixu/kf-tumor-only-wf-dev/tasks/98fcf1b6-97ce-44e0-9075-a90ba7dc3c38/)
-- [Workflow Test Run](https://github.com/kids-first/kfdrc-benchmark/tree/main/docs/Test_run_wf.png) 
-- [link to test run](https://github.com/kids-first/kfdrc-benchmark/tree/main/docs/Test_run_plotting_tool.png)
+- ![Workflow Test Run](https://github.com/kids-first/kfdrc-benchmark/tree/main/docs/Test_run_wf.png) 
+- ![Test run](https://github.com/kids-first/kfdrc-benchmark/tree/main/docs/Test_run_plotting_tool.png)
