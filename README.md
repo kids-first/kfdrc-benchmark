@@ -4,7 +4,7 @@ The D3b Bixu VCF Benchmarking Workflow uses RTG Tools and BCFtools to generate b
 
 ### CWL Workflow and Tools
 
-This workflow have 3 CWL based tools. The description for these tools are as follows:
+The D3b Bixu VCF Benchmarking Workflow is composed of three Common Workflow Language (CWL) tools:
 
 - Convert_reference_SDF: This converts fasta file into sdf format required for RTG as an input.
 
