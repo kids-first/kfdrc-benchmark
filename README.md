@@ -49,7 +49,7 @@ Bar Plots
 RTG Tool 
  benchmarking_tsv: benchmarking output in tsv format
  average_result: average benchmarking results 
- rtg_results: directory containing output for all the samples from RTG
+ rtg_results: directory containing outputs for all the samples from RTG
 
 Bar Plots 
  plot_WGS: plot for WGS samples 
