@@ -60,7 +60,7 @@ Bar Plots
 
 - [Benchmarking docker](https://github.com/d3b-center/bixtools/blob/master/tumor-only-benchmarking/1.0.0/Dockerfile):
 
-It can also be pulled on CLI using following command:
+Prebuilt Docker image is available through Command Line Interface (CLI):
 ```
 docker pull pgc-images.sbgenomics.com/d3b-bixu/tumor-only-benchmarking:1.0.0
 ```
