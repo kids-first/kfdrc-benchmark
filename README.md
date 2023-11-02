@@ -62,7 +62,7 @@ Bar Plots
 
 It can also be pulled on CLI using following command:
 ```
-Docker Pull docker pull pgc-images.sbgenomics.com/d3b-bixu/tumor-only-benchmarking:1.0.0
+docker pull pgc-images.sbgenomics.com/d3b-bixu/tumor-only-benchmarking:1.0.0
 ```
 - ![Workflow Test Run](https://github.com/kids-first/kfdrc-benchmark/tree/main/docs/Test_run_wf.png) 
 - ![Test run](https://github.com/kids-first/kfdrc-benchmark/tree/main/docs/Test_run_plotting_tool.png)
