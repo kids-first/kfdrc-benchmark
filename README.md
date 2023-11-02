@@ -6,7 +6,7 @@ The D3b Bixu VCF Benchmarking Workflow uses RTG Tools and BCFtools to generate b
 
 The D3b Bixu VCF Benchmarking Workflow is composed of three Common Workflow Language (CWL) tools:
 
-- Convert_reference_SDF: This converts fasta file into sdf format required for RTG as an input.
+- convert_reference_SDF: converts the contents of a FASTA file into the RTG Sequence Data File (SDF) format
 
 - Run_rtg_tools: User have to provide all the target vcf files in a folder and all the gold standard in another folder. This tool will create a manifest using target vcfs by pulling sample id from vcf header and will aim to look for corresponding gold standard vcfs.  This tool can also filter target vcfs if filter string is provided. Filtering is optional, and once calls are filtered, RTG tool computes the confusion matrix on new filtered vcfs or target vcfs (depends if filter string is provided or not) using the gold standard provided.
 
