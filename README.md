@@ -10,7 +10,7 @@ The D3b Bixu VCF Benchmarking Workflow is composed of three Common Workflow Lang
 
 - run_rtg_tool: User have to provide all the target VCF files in a folder and all the gold standard files in another folder. This tool will create a manifest using target VCFs by pulling sample id from VCF header and will aim to look for corresponding gold standard VCFs. This tool can optionally filter target VCFs if a filter string is provided. Finally, RTG Tools computes the confusion matrix comparing the, optionally-filtered, target VCFs against their associated gold standard VCFs.
 
-- Bar plots: This tool take s rtg_results folder as input that contains tp.vcf.gz & fp.vcf.gz for all desired samples, plot feature (Example: `[%DP ]`) and a manifest for samples that informs this tool about experimental strategy. This tool will loop over all the sample folders and will pull TPs & FPs. Further, it will plot stack bar plots for WGS and WXS separately.
+- bar_plots: This tool takes rtg_results folder as input that contains `tp.vcf.gz` & `fp.vcf.gz` for all desired samples, plot feature (Example: `[%DP ]`) and a manifest for samples that informs this tool about experimental strategy. This tool will loop over all the sample folders and will pull TPs & FPs. Further, it will plot stack bar plots for Whole Genome Sequencing (WGS) and Whole Exome Sequencing (WXS) separately.
 
 Plotting tool also lives independently to provide flexibility and save cost for analysis if required. Here is the link to [plotting tool](https://cavatica.sbgenomics.com/u/d3b-bixu/kf-tumor-only-wf-dev/apps/filter_plotting) 
 
