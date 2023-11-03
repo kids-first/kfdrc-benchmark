@@ -30,7 +30,7 @@ convert_reference_sdf
 
 RTG Tool
   test_folder: provide folder containing test vcf file with index files,
-  gold_standard_folder_path: provide folder containing gold standard vcf files with their index files
+  gold_standard_folder_path: directory containing gold standard VCFs and their associated indices
   ram: RAM (in GB) to allocate to RTG Tools, default: 14 
   output_file_name: provide output file name
   filter_string: (optional) BCFtools format filter_string example- INFO/DP>30 && INFO/AD>1, default: ''
