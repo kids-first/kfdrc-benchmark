@@ -1,4 +1,4 @@
-# D3b Bixu VCF benchmarking workflow
+# D3b Bixu VCF Benchmarking Workflow
 
 The D3b Bixu VCF Benchmarking Workflow uses RTG Tools and BCFtools to generate benchmark statistics and a Matplotlib-based tool to plot tool performance and/or fidelity. This workflow computes confusion matrix with F1 score for target VCFs using provided gold standard VCF files. It can also filter calls using [BCFtools-style filtering expression](https://samtools.github.io/bcftools/bcftools.html#expressions) (-i flag argument for ex `DP > 10`). Additionally, it can prepare stacked bar plots with true positives (TP) and false positives (FP) together for specific numerical filters.
 
