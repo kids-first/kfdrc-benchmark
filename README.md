@@ -26,7 +26,7 @@ Here is figure that depicts skeleton of this workflow
 
 ```
 convert_reference_sdf
-  ref_file: provide reference file in fasta format
+  ref_file: reference file in FASTA format
 
 RTG Tool
   test_folder: provide folder containing test vcf file with index files,
