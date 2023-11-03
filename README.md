@@ -8,7 +8,7 @@ The D3b Bixu VCF Benchmarking Workflow is composed of three Common Workflow Lang
 
 - convert_reference_SDF: converts the contents of a FASTA file into the RTG Sequence Data File (SDF) format
 
-- Run_rtg_tools: User have to provide all the target vcf files in a folder and all the gold standard in another folder. This tool will create a manifest using target vcfs by pulling sample id from vcf header and will aim to look for corresponding gold standard vcfs.  This tool can also filter target vcfs if filter string is provided. Filtering is optional, and once calls are filtered, RTG tool computes the confusion matrix on new filtered vcfs or target vcfs (depends if filter string is provided or not) using the gold standard provided.
+- run_rtg_tool: User have to provide all the target VCF files in a folder and all the gold standard files in another folder. This tool will create a manifest using target VCFs by pulling sample id from VCF header and will aim to look for corresponding gold standard VCFs. This tool can optionally filter target VCFs if a filter string is provided. Finally, RTG Tools computes the confusion matrix comparing the, optionally-filtered, target VCFs against their associated gold standard VCFs.
 
 - Bar plots: This tool take s rtg_results folder as input that contains tp.vcf.gz & fp.vcf.gz for all desired samples, plot feature (Example: `[%DP ]`) and a manifest for samples that informs this tool about experimental strategy. This tool will loop over all the sample folders and will pull TPs & FPs. Further, it will plot stack bar plots for WGS and WXS separately.
 
