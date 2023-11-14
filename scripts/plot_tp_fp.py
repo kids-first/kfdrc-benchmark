@@ -109,10 +109,15 @@ def main(args):
     filter = args.filter
     filter_name = args.filtername
     output_file_name = args.output_file_name
-    interval = list(map(float, args.interval_list))  # start end bin_size
+    start= args.plot_start
+    end= args.plot_end
+    bin_size= args.plot_bin_size
+
+    interval=[float(start), float(end), float(bin_size)]
+    
     if len(interval) != 3:
         raise Exception(
-            "Range list should have 3 numeric ( int or float) in the order: start, end and bin size. Start < End and bin << (End - Start)"
+            "Provide all the 3 numeric(int/float): start, end and bin size. Start < End and bin << (End - Start)"
         )
 
     manifest_sample = pd.read_csv(
@@ -159,7 +164,13 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--output_file_name", help="provide output file name")
     parser.add_argument("-n", "--filtername", help="provide filter name")
     parser.add_argument(
-        "-l", "--interval_list", nargs="+", help="provide output file name"
+        "-s", "--plot_start", help="Start point for the plot"
+    )
+    parser.add_argument(
+        "-e", "--plot_end", help="End point for the plot"
+    )
+    parser.add_argument(
+        "-b", "--plot_bin_size", help="bin size for the plot"
     )
 
     # Read arguments from command line

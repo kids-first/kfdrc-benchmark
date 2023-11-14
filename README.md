@@ -6,11 +6,11 @@ The D3b Bixu VCF Benchmarking Workflow uses RTG Tools and BCFtools to generate b
 
 The D3b Bixu VCF Benchmarking Workflow is composed of three Common Workflow Language (CWL) tools:
 
-- convert_reference_SDF: converts the contents of a FASTA file into the RTG Sequence Data File (SDF) format
+1. convert_reference_SDF: converts the contents of a FASTA file into the RTG Sequence Data File (SDF) format
 
-- run_rtg_tool: User have to provide all the target VCF files in a folder and all the gold standard files in another folder. This tool will create a manifest using target VCFs by pulling sample id from VCF header and will aim to look for corresponding gold standard VCFs. This tool can optionally filter target VCFs if a filter string is provided. Finally, RTG Tools computes the confusion matrix comparing the, optionally-filtered, target VCFs against their associated gold standard VCFs.
+2. run_rtg_tool: User have to provide all the target VCF files in a folder and all the gold standard files in another folder. This tool will create a manifest using target VCFs by pulling sample id from VCF header and will aim to look for corresponding gold standard VCFs. This tool can optionally filter target VCFs if a filter string is provided. Finally, RTG Tools computes the confusion matrix comparing the, optionally-filtered, target VCFs against their associated gold standard VCFs.
 
-- bar_plots: This tool takes rtg_results folder as input that contains `tp.vcf.gz` & `fp.vcf.gz` for all desired samples, plot feature (Example: `[%DP ]`) and a manifest for samples that informs this tool about experimental strategy. This tool will loop over all the sample folders and will pull TPs & FPs. Further, it will plot stack bar plots for Whole Genome Sequencing (WGS) and Whole Exome Sequencing (WXS) separately.
+3. bar_plots: This tool takes rtg_results folder as input that contains `tp.vcf.gz` & `fp.vcf.gz` for all desired samples, plot feature (Example: `[%DP ]`) and a manifest for samples that informs this tool about experimental strategy. This tool will loop over all the sample folders and will pull TPs & FPs. Further, it will plot stack bar plots for Whole Genome Sequencing (WGS) and Whole Exome Sequencing (WXS) separately.
 
  To provide flexibility and save cost for analysis, the plotting tool from above can also be run independently. That tool can be found [on CAVATICA](https://cavatica.sbgenomics.com/u/d3b-bixu/kf-tumor-only-wf-dev/apps/filter_plotting).
 
@@ -37,11 +37,13 @@ RTG Tool
   cores: provide cores to run samples in multiprocessing, default: 8
 
 Bar Plots
-  disable_plotting: "Set to true to disable plotting tool", default: True
-  plot_feature: provide bcftool format like filter_string example- %DP , default: '%DP'
-  sample_manifest: Provide sample with experimental strategy
-  plot_range: Provide start end and bin size in the same order Example- 0 200 10 for depth, default: ["0","200","10"] 
-  filter_name: provide filter name
+  disable_plotting: Set to true to disable plotting tool, default: True
+  plot_feature: bcftool format like filter_string example- %DP , default: '%DP'
+  sample_manifest: sample manifest with sample ID and their experimental strategy
+  plot_start: start point for the plot, default: '0'
+  plot_end: cut point for the plot,  default: '1'
+  plot_bin_size: bin size for the plot, default: '0.1'
+  filter_name: filter name as annotated in the VCF files
 ```
 
 ### Outputs
