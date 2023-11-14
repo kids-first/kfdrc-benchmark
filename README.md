@@ -18,7 +18,7 @@ The D3b Bixu VCF Benchmarking Workflow is composed of three Common Workflow Lang
 
 This workflow is also deployed on cavatica and can be access as an [app](https://cavatica.sbgenomics.com/u/d3b-bixu/kf-tumor-only-wf-dev/apps/benchmarking_RTG_tool) 
 
-Here is figure that depicts skeleton of this workflow
+Following is a figure that depicts skeleton of vcf benchmarking workflow
 
 ![Benchmarking schematic](https://github.com/kids-first/kfdrc-benchmark/blob/main/docs/Benchmarking_wf_schematic.png)
 
@@ -78,9 +78,10 @@ docker pull pgc-images.sbgenomics.com/d3b-bixu/tumor-only-benchmarking:1.0.0
 
 This workflow can be deployed on cavatica using [sbpack](https://github.com/rabix/sbpack) API. Following is the command line that will push workflow to cavatica
 ```
-Workflow
   sbpack cavatica <path-to-project>/<app-name> workflow/run_benchmarking.cwl
+```
 
-Plotting tool
+Following command line can help to push plotting tool to cavatica
+```
   sbpack cavatica <path-to-project>/<app-name> tools/plotting.cwl
 ```
