@@ -60,11 +60,10 @@ Bar Plots
 ```
 
 ### Benchmarking Workflow Test Run
-- ![Workflow Test Run](https://github.com/kids-first/kfdrc-benchmark/blob/main/docs/Test_run_wf.png) 
+![Workflow Test Run](https://github.com/kids-first/kfdrc-benchmark/blob/main/docs/Test_run_wf.png) 
 
 ### Plotting Tool Test Run
-- ![Test run](https://github.com/kids-first/kfdrc-benchmark/blob/main/docs/Test_run_plotting_tool.png)
-
+![Test run](https://github.com/kids-first/kfdrc-benchmark/blob/main/docs/Test_run_plotting_tool.png)
 
 ### More details
 
