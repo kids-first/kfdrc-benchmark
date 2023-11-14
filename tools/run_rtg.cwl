@@ -18,7 +18,7 @@ requirements:
     entry: $(inputs.test_folder)
     writable: true
   - entryname: consensus_folder
-    entry: $(inputs.gold_standard_folder_path_tool)
+    entry: $(inputs.consensus_folder_path)
     writable: true 
 hints:  
   DockerRequirement:  
@@ -36,7 +36,7 @@ arguments:
 
 inputs: 
   test_folder: { doc: provide folder containing test vcf file with index files, type: Directory, inputBinding: { prefix: --test_folder_path, position: 2} }
-  gold_standard_folder_path_tool: { doc: provide folder containing consensus vcf file with index files, type: Directory, inputBinding: { prefix: --consensus_folder_path, position: 2 }  }
+  consensus_folder_path: { doc: provide folder containing consensus vcf file with index files, type: Directory, inputBinding: { prefix: --consensus_folder_path, position: 2 }  }
   ref_folder: { doc: provide reference file in fasta format, type: 'Directory?', inputBinding: { prefix: --ref_folder_sdf, position: 2 }  }
   ram: { doc: provide ram (in GB) based on number of test files, type: 'int?', default: 8 } 
   filter_string: { doc: provide bcftool format filter_string example- INFO/DP>30 && INFO/AD>1, type: 'string?', default: '', inputBinding: { prefix: --filter, position: 2 } }
