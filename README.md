@@ -65,12 +65,19 @@ Bar Plots
 ### Plotting Tool Test Run
 ![Test run](https://github.com/kids-first/kfdrc-benchmark/blob/main/docs/Test_run_plotting_tool.png)
 
-### More details
+### Workflow Docker
 
-- [Benchmarking docker](https://github.com/d3b-center/bixtools/blob/master/tumor-only-benchmarking/1.0.0/Dockerfile)
+Workflow docker can be found at [Benchmarking docker](https://github.com/d3b-center/bixtools/blob/master/tumor-only-benchmarking/1.0.0/Dockerfile)
 
 Prebuilt docker image is also available through Command Line Interface (CLI):
 ```
 docker pull pgc-images.sbgenomics.com/d3b-bixu/tumor-only-benchmarking:1.0.0
+```
+
+### Deploy Workflow on Cavatica
+
+This workflow can be deployed on cavatica using [sbpack](https://github.com/rabix/sbpack) API. Following is the command line that will push workflow to cavatica
+```
+sbpack cavatica <path-to-project>/<app-name> workflow/run_benchmarking.cwl
 ```
 
