@@ -8,7 +8,7 @@ requirements:
 inputs:
 #rtg tool
   test_folder: { doc: provide folder containing test vcf file with index files, type: Directory}
-  consensus_folder_path: { doc: provide folder containing consensus vcf file with index files, type: Directory }
+  gold_standard_folder_path: { doc: provide folder containing consensus vcf file with index files, type: Directory }
   ref_file: { doc: provide reference file in fasta format, type: 'File?' }
   ram: { doc: provide ram (in GB) based on number of test files, type: 'int?', default: 14 } 
   output_file_name: { doc: provide output file name, type: string }
@@ -19,7 +19,9 @@ inputs:
   disable_plotting: {type: boolean, default: True, doc: "Set to true to disable plotting tool" }
   plot_feature: { doc: provide bcftool format like filter_string example- %DP, type: 'string?', default: '%DP' }
   sample_manifest: { doc: provide sample with experimental strategy, type: 'File?' }
-  plot_range: {doc: Provide start end and bin size in the same order Example- 0 200 10 for depth,default: ["0","200","10"] , type: 'string[]' }
+  plot_start: { doc: start point for the plot, default: "0", type: 'string' }
+  plot_end: { doc: cut point for the plot, default: "1", type: 'string' }
+  plot_bin_size: { doc: bin size for the plot, default: "0.1", type: 'string' }
   filter_name: { doc: provide filter name, type: 'string?',default: "filter" }
 
 outputs:
@@ -42,7 +44,7 @@ steps:
     in:
        test_folder: test_folder
        ref_folder: convert_reference/ref_SDF
-       consensus_folder_path: consensus_folder_path
+       gold_standard_folder_path_tool: gold_standard_folder_path
        filter_string: filter_string
        output_file_name: output_file_name
        ram: ram
@@ -56,8 +58,10 @@ steps:
       disable_tool: disable_plotting
       input_folder: run_RTG/results_dir
       filter_string: plot_feature
-      sample_manifest: sample_manifest
-      range: plot_range 
+      sample_manifest: sample_manifest 
+      plot_start_tool: plot_start
+      plot_end_tool: plot_end
+      plot_bin_size_tool: plot_bin_size
       plot_name: output_file_name
       filter_name: filter_name
     out: [WGS_png,WXS_png]             
