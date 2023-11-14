@@ -20,7 +20,7 @@ This workflow is also deployed on cavatica and can be access as an [app](https:/
 
 Here is figure that depicts skeleton of this workflow
 
-![Benchmarking schematic](https://github.com/kids-first/kfdrc-benchmark/tree/main/docs/Benchmarking_wf_schematic.png)
+![Benchmarking schematic](https://github.com/kids-first/kfdrc-benchmark/blob/main/docs/Benchmarking_wf_schematic.png)
 
 ### Inputs
 
@@ -66,5 +66,8 @@ Prebuilt Docker image is available through Command Line Interface (CLI):
 ```
 docker pull pgc-images.sbgenomics.com/d3b-bixu/tumor-only-benchmarking:1.0.0
 ```
-- ![Workflow Test Run](https://github.com/kids-first/kfdrc-benchmark/tree/main/docs/Test_run_wf.png) 
-- ![Test run](https://github.com/kids-first/kfdrc-benchmark/tree/main/docs/Test_run_plotting_tool.png)
+### Benchmarking Workflow Test Run
+- ![Workflow Test Run](https://github.com/kids-first/kfdrc-benchmark/blob/main/docs/Test_run_wf.png) 
+
+### Plotting Tool Test Run
+- ![Test run](https://github.com/kids-first/kfdrc-benchmark/blob/main/docs/Test_run_plotting_tool.png)
