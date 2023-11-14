@@ -56,18 +56,21 @@ RTG Tool
 Bar Plots 
  plot_WGS: plot for WGS samples 
  plot_WXS: plot for WXS samples
-```
 
-### More details
-
-- [Benchmarking docker](https://github.com/d3b-center/bixtools/blob/master/tumor-only-benchmarking/1.0.0/Dockerfile):
-
-Prebuilt Docker image is available through Command Line Interface (CLI):
-```
-docker pull pgc-images.sbgenomics.com/d3b-bixu/tumor-only-benchmarking:1.0.0
-```
 ### Benchmarking Workflow Test Run
 - ![Workflow Test Run](https://github.com/kids-first/kfdrc-benchmark/blob/main/docs/Test_run_wf.png) 
 
 ### Plotting Tool Test Run
 - ![Test run](https://github.com/kids-first/kfdrc-benchmark/blob/main/docs/Test_run_plotting_tool.png)
+
+```
+
+### More details
+
+- [Benchmarking docker](https://github.com/d3b-center/bixtools/blob/master/tumor-only-benchmarking/1.0.0/Dockerfile)
+
+Prebuilt docker image is also available through Command Line Interface (CLI):
+```
+docker pull pgc-images.sbgenomics.com/d3b-bixu/tumor-only-benchmarking:1.0.0
+```
+
