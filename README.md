@@ -12,7 +12,7 @@ The D3b Bixu VCF Benchmarking Workflow is composed of three Common Workflow Lang
 
 3. bar_plots: This tool takes rtg_results folder as input that contains `tp.vcf.gz` & `fp.vcf.gz` for all desired samples, plot feature (Example: `[%DP ]`) and a manifest for samples that informs this tool about experimental strategy. This tool will loop over all the sample folders and will pull TPs & FPs. Further, it will plot stack bar plots for Whole Genome Sequencing (WGS) and Whole Exome Sequencing (WXS) separately.
 
- To provide flexibility and save cost for analysis, the plotting tool from above can also be run independently. That tool can be found [on CAVATICA](https://cavatica.sbgenomics.com/u/d3b-bixu/kf-tumor-only-wf-dev/apps/filter_plotting).
+ To provide flexibility and save cost for analysis, the plotting tool from above can also be run independently. That tool can be found on [CAVATICA](https://cavatica.sbgenomics.com/u/d3b-bixu/kf-tumor-only-wf-dev/apps/filter_plotting).
 
 ### Deployment
 
@@ -78,6 +78,9 @@ docker pull pgc-images.sbgenomics.com/d3b-bixu/tumor-only-benchmarking:1.0.0
 
 This workflow can be deployed on cavatica using [sbpack](https://github.com/rabix/sbpack) API. Following is the command line that will push workflow to cavatica
 ```
-sbpack cavatica <path-to-project>/<app-name> workflow/run_benchmarking.cwl
-```
+Workflow
+  sbpack cavatica <path-to-project>/<app-name> workflow/run_benchmarking.cwl
 
+Plotting tool
+  sbpack cavatica <path-to-project>/<app-name> tools/plotting.cwl
+```
