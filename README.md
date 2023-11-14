@@ -57,13 +57,14 @@ Bar Plots
  plot_WGS: plot for WGS samples 
  plot_WXS: plot for WXS samples
 
+```
+
 ### Benchmarking Workflow Test Run
 - ![Workflow Test Run](https://github.com/kids-first/kfdrc-benchmark/blob/main/docs/Test_run_wf.png) 
 
 ### Plotting Tool Test Run
 - ![Test run](https://github.com/kids-first/kfdrc-benchmark/blob/main/docs/Test_run_plotting_tool.png)
 
-```
 
 ### More details
 
