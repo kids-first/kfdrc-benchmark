@@ -10,17 +10,15 @@ The D3b Bixu VCF Benchmarking Workflow is composed of three Common Workflow Lang
 
 2. run_rtg_tool: User have to provide all the target VCF files in a folder and all the gold standard files in another folder. This tool will create a manifest using target VCFs by pulling sample id from VCF header and will aim to look for corresponding gold standard VCFs. This tool can optionally filter target VCFs if a filter string is provided. Finally, RTG Tools computes the confusion matrix comparing the, optionally-filtered, target VCFs against their associated gold standard VCFs.
 
-3. bar_plots: This tool takes rtg_results folder as input that contains `tp.vcf.gz` & `fp.vcf.gz` for all desired samples, plot feature (Example: `[%DP ]`) and a manifest for samples that informs this tool about experimental strategy. This tool will loop over all the sample folders and will pull TPs & FPs. Further, it will plot stack bar plots for Whole Genome Sequencing (WGS) and Whole Exome Sequencing (WXS) separately.
+3. bar_plots: This tool takes rtg_results folder as input that contains `tp.vcf.gz` & `fp.vcf.gz` for all desired samples, plot feature (Example: `[%DP]`) and a manifest for samples that informs this tool about experimental strategy (WGS or WXS). This tool will loop over all the rtg generated sample folders and will pull TPs & FPs. Further, it will plot stack bar plots for Whole Genome Sequencing (WGS) and Whole Exome Sequencing (WXS) separately.
 
- To provide flexibility and save cost for analysis, the plotting tool from above can also be run independently. That tool can be found [on CAVATICA](https://cavatica.sbgenomics.com/u/d3b-bixu/kf-tumor-only-wf-dev/apps/filter_plotting).
+To provide flexibility and save cost for analysis, the plotting tool from above can also be run independently.
 
-### Deployment
+### Structure 
 
-This workflow is also deployed on cavatica and can be access as an [app](https://cavatica.sbgenomics.com/u/d3b-bixu/kf-tumor-only-wf-dev/apps/benchmarking_RTG_tool) 
+Following is a figure that depicts skeleton of vcf benchmarking workflow
 
-Here is figure that depicts skeleton of this workflow
-
-![Benchmarking schematic](https://github.com/kids-first/kfdrc-benchmark/tree/main/docs/Benchmarking_wf_schematic.png)
+![Benchmarking schematic](https://github.com/kids-first/kfdrc-benchmark/blob/main/docs/Benchmarking_wf_schematic.png)
 
 ### Inputs
 
@@ -56,15 +54,32 @@ RTG Tool
 Bar Plots 
  plot_WGS: plot for WGS samples 
  plot_WXS: plot for WXS samples
+
 ```
 
-### More details
+### Benchmarking Workflow Test Run
+![Workflow Test Run](https://github.com/kids-first/kfdrc-benchmark/blob/main/docs/Test_run_wf.png) 
 
-- [Benchmarking docker](https://github.com/d3b-center/bixtools/blob/master/tumor-only-benchmarking/1.0.0/Dockerfile):
+### Plotting Tool Test Run
+![Test run](https://github.com/kids-first/kfdrc-benchmark/blob/main/docs/Test_run_plotting_tool.png)
 
-Prebuilt Docker image is available through Command Line Interface (CLI):
+### Workflow Docker
+
+Workflow docker can be found at [Benchmarking docker](https://github.com/d3b-center/bixtools/blob/master/tumor-only-benchmarking/1.0.0/Dockerfile)
+
+Prebuilt docker image is also available through Command Line Interface (CLI):
 ```
 docker pull pgc-images.sbgenomics.com/d3b-bixu/tumor-only-benchmarking:1.0.0
 ```
-- ![Workflow Test Run](https://github.com/kids-first/kfdrc-benchmark/tree/main/docs/Test_run_wf.png) 
-- ![Test run](https://github.com/kids-first/kfdrc-benchmark/tree/main/docs/Test_run_plotting_tool.png)
+
+### Deploy Workflow or Tools on Cavatica
+
+This workflow can be deployed on cavatica using [sbpack](https://github.com/rabix/sbpack) API. Following is the command line that will push workflow to cavatica
+```
+  sbpack cavatica <path-to-project>/<app-name> workflow/run_benchmarking.cwl
+```
+
+Following command line can help to push plotting tool to cavatica
+```
+  sbpack cavatica <path-to-project>/<app-name> tools/plotting.cwl
+```
