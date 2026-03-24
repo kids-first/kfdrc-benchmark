@@ -34,6 +34,7 @@ inputs:
   baseline: { type: "File", secondaryFiles: [{pattern: ".tbi", required: true}], inputBinding: { position: 2, prefix: "--baseline" }, doc: "VCF file containing baseline variants" }
   calls: { type: "File", secondaryFiles: [{pattern: ".tbi", required: true}], inputBinding: { position: 2, prefix: "--calls" }, doc: "VCF file containing called variants" }
   bed_regions: { type: "File?", inputBinding: { position: 2, prefix: "--bed-regions" }, doc: "if set, only read VCF records that overlap the ranges contained in the specified BED file" }
+  region: { type: "string?", inputBinding: { position: 2, prefix: "--region" }, doc: "if set, only read VCF records that overlap the this region" }
   evaluation_regions: { type: "File?", inputBinding: { position: 2, prefix: "--evaluation-regions" }, doc: "if set, evaluate within regions contained in the supplied BED file, allowing transborder matches. To be used for truth-set high-confidence regions or other regions of interest where region boundary effects should be minimized" }
   
   tool_name: { type: "string" }

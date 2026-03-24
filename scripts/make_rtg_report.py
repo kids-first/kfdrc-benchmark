@@ -288,6 +288,7 @@ def make_stratification_report(stratification, cli_args):
 
     counts = build_counts_df(df)
     metrics = build_metrics_df(df, counts)
+
 #    calls = df[(~df.STATUS.str.contains("TP_baseline")) & (~df.STATUS.str.contains("FN"))]
 #    baseline = df[(~df.STATUS.str.contains("TP_call")) & (~df.STATUS.str.contains("FP"))]
 #    scaled_calls = build_norm_score_calls_df(calls)
@@ -364,6 +365,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     POSSIBLE_STRATIFICATIONS = ["WholeGenome", "Homopolymer", "TandemRepeat", "Satellite", "LowMappability", "SegDup", "DifficultRegion", "EasyRegion"]
+
+    dfs = [pd.read_csv(tsv_path, sep="\t") for tsv_path in args.tsvs]
+    df = pd.concat(dfs, ignore_index=True)
+    df.sort_values(by=["STRATIFICATION", "SUBSET",  "TOOL", "CHROM", "POS", "REF", "ALT"], inplace=True)
+    df.to_parquet(f"{args.dataset}.parquet.brotli", compression="brotli", index=False, partition_cols=["STRATIFICATION", "SUBSET", "TOOL"])
 
     with concurrent.futures.ProcessPoolExecutor() as executor:
         for done_report_name in executor.map(make_stratification_report, POSSIBLE_STRATIFICATIONS, itertools.repeat(args)):

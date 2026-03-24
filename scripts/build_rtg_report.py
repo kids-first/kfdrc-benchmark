@@ -7,7 +7,6 @@ import sys
 # pip install cyvcf2
 import cyvcf2
 
-
 HEADER_COLUMNS = ["CHROM", "POS", "REF", "ALT", "SCORE", "STATUS", "CALL_WEIGHT", "TOOL", "SUBSET", "STRATIFICATION"]
 POSSIBLE_STRATIFICATIONS = ["WholeGenome", "Homopolymer", "TandemRepeat", "Satellite", "LowMappability", "SegDup", "DifficultRegion", "EasyRegion"]
 

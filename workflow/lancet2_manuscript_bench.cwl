@@ -9,7 +9,8 @@ requirements:
 inputs:
   baseline: { type: "File", secondaryFiles: [{pattern: ".tbi", required: true}]}
   stratification_bed: { type: "File", secondaryFiles: [{pattern: ".tbi", required: true}] }
-  evaluation_bed: { type: "File?" }
+  region_bed: { type: "File?" }
+  region: { type: "string?" }
   reference: { type: "File" }
   reference_fai: { type: "File" }
   vcfeval_extra_args: { type: "string?", default: "--all-records --ref-overlap --output-mode annotate --vcf-score-field QUAL" }
@@ -19,8 +20,18 @@ inputs:
 
 outputs:
   report_htmls: { type: 'File[]', outputSource: make_rtg_report/htmls } 
+  report_data: { type: 'File[]', outputSource: make_rtg_report/data } 
  
 steps:
+  bcftools_check_annot:
+    hints:
+      - class: 'sbg:AWSInstanceType'
+        value: c7i.2xlarge
+    run: ../tools/bcftools_check_annot.cwl
+    in:
+      vcf: baseline
+      annotations: stratification_bed
+    out: [checked]
   rtg_format:
     hints:
       - class: 'sbg:AWSInstanceType'
@@ -34,9 +45,9 @@ steps:
       - class: 'sbg:AWSInstanceType'
         value: c7i.2xlarge
     run: ../tools/fai_to_bed.cwl
-    when: $(inputs.evaluation_bed == null)
+    when: $(inputs.region_bed == null)
     in:
-      evaluation_bed: evaluation_bed
+      region_bed: region_bed
       fai: reference_fai
     out: [bed]
   bcftools_pare_bed:
@@ -44,9 +55,11 @@ steps:
       - class: 'sbg:AWSInstanceType'
         value: c7i.2xlarge
     run: ../tools/bcftools_pare_bed.cwl
+    when: $(inputs.region == null)
     in:
+      region: region
       bed:
-        source: [fai_to_bed/bed, evaluation_bed]
+        source: [fai_to_bed/bed, region_bed]
         pickValue: first_non_null
       vcf: baseline
     out: [pared_bed]
@@ -74,7 +87,7 @@ steps:
     scatterMethod: dotproduct
     in:
       template: rtg_format/sdf
-      baseline: baseline
+      baseline: bcftools_check_annot/checked
       calls: bcftools_annotate/annotated
       bed_regions: bcftools_pare_bed/pared_bed
       baseline_sample:
@@ -82,6 +95,7 @@ steps:
       calls_sample:
         valueFrom: "ALT"
       tool_name: tool_name
+      region: region
       extra_args: vcfeval_extra_args
     out: [baseline_vcf, calls_vcf]
   build_rtg_report:
@@ -108,4 +122,4 @@ steps:
         source: baseline
         valueFrom: '$(self.basename.replace(/.vcf.gz$/, ""))'
       tsvs: build_rtg_report/report
-    out: [htmls]
+    out: [htmls, data]

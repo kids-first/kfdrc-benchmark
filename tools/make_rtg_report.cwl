@@ -20,7 +20,10 @@ arguments:
   shellQuote: false   
   valueFrom: >-
     python make_rtg_report.py
-
+- position: 10
+  shellQuote: false   
+  valueFrom: >-
+    && tar -czf $(inputs.sample_name).parquet.brotli.tar.gz $(inputs.sample_name).parquet.brotli
 inputs:
   sample_name: { type: "string", inputBinding: { position: 2, prefix: "--dataset" }, doc: "Name of sample being benchmarked." }
   truthset: { type: "string", inputBinding: { position: 2, prefix: "--truthset" }, doc: "Name of truthset to be used in the benchmarking report" }
@@ -32,3 +35,7 @@ outputs:
     type: File[]
     outputBinding:
       glob: "*.html"
+  data:
+    type: File
+    outputBinding:
+      glob: "*.tar.gz"
