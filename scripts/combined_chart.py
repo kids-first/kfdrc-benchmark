@@ -9,7 +9,7 @@ TOOLS_COLOR_MAP_KF = {
     "BWA-KFsomatic": "rgb(127, 60, 141)",
     "DRAGEN44-KFsomatic": "rgb(17, 165, 121)",
     "DRAGEN44-DRAGEN44": "rgb(165, 170, 153)",
-    "DRAGEN45-DRAGEN44": "rgb(242, 183, 1)",
+    "DRAGEN44-DRAGEN45": "rgb(242, 183, 1)",
     "DRAGEN45-DRAGEN45": "rgb(231, 63, 116)",
 }
 
@@ -20,6 +20,40 @@ TOOL_ORDER = [
     "DRAGEN44-DRAGEN45",
     "DRAGEN45-DRAGEN45",
 ]
+
+def ensure_color_map_from_palette(color_map: dict, keys, palette=None) -> dict:
+    out = dict(color_map)
+    used = {str(c).strip().lower() for c in out.values()}
+
+    if palette is None:
+        palette = (
+            px.colors.qualitative.Alphabet +
+            px.colors.qualitative.Dark24 +
+            px.colors.qualitative.Light24 +
+            px.colors.qualitative.D3 +
+            px.colors.qualitative.G10 +
+            px.colors.qualitative.T10
+        )
+
+    # de-dup palette (case-insensitive) while preserving order
+    seen = set()
+    palette = [c for c in palette if not (c.lower() in seen or seen.add(c.lower()))]
+
+    palette_iter = (c for c in palette if c.strip().lower() not in used)
+
+    for k in keys:
+        if k in out:
+            continue
+        try:
+            c = next(palette_iter)
+        except StopIteration:
+            raise ValueError(
+                "Ran out of distinct palette colors. Provide a bigger palette or allow generated colors."
+            )
+        out[k] = c
+        used.add(c.strip().lower())
+
+    return out
 
 def build_metrics(parquet_df_path, stratification="WholeGenome"):
     dataset = parquet_df_path.split(".")[0]
@@ -71,6 +105,12 @@ def main():
 
     tmp = df[(df.SUBSET == "Combined")].copy()
 
+    new_color_map = ensure_color_map_from_palette(
+        TOOLS_COLOR_MAP_KF,
+        tmp["TOOL"].unique(),
+        palette=px.colors.qualitative.Plotly
+    )
+
     legend = dict(
         orientation="h",
         xanchor="right",
@@ -93,7 +133,7 @@ def main():
         facet_col="STRATIFICATION",
         height=300 * max(1, tmp["DATASET"].nunique()),
         range_y=[50, 100],
-        color_discrete_map=TOOLS_COLOR_MAP_KF,
+        color_discrete_map=new_color_map,
         category_orders={
             "METRIC": ["Precision", "Sensitivity", "F1_Score"],
             "STRATIFICATION": stratifications,

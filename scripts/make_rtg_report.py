@@ -37,6 +37,40 @@ TOOLS_COLOR_MAP_KF = {
 }
 
 
+def ensure_color_map_from_palette(color_map: dict, keys, palette=None) -> dict:
+    out = dict(color_map)
+    used = {str(c).strip().lower() for c in out.values()}
+
+    if palette is None:
+        palette = (
+            px.colors.qualitative.Alphabet +
+            px.colors.qualitative.Dark24 +
+            px.colors.qualitative.Light24 +
+            px.colors.qualitative.D3 +
+            px.colors.qualitative.G10 +
+            px.colors.qualitative.T10
+        )
+
+    # de-dup palette (case-insensitive) while preserving order
+    seen = set()
+    palette = [c for c in palette if not (c.lower() in seen or seen.add(c.lower()))]
+
+    palette_iter = (c for c in palette if c.strip().lower() not in used)
+
+    for k in keys:
+        if k in out:
+            continue
+        try:
+            c = next(palette_iter)
+        except StopIteration:
+            raise ValueError(
+                "Ran out of distinct palette colors. Provide a bigger palette or allow generated colors."
+            )
+        out[k] = c
+        used.add(c.strip().lower())
+
+    return out
+
 def build_metrics_df(df, counts):
     tmp = list()
     for tool, subset in itertools.product(df.TOOL.unique(), df.SUBSET.unique()):
@@ -63,9 +97,14 @@ def build_metrics_df(df, counts):
 
 
 def plot_metrics_df(df, category_orders):
+    new_color_map = ensure_color_map_from_palette(
+        TOOLS_COLOR_MAP_KF,
+        df["TOOL"].unique(),
+        palette=px.colors.qualitative.Plotly
+    )
     legend = dict(orientation="h", xanchor="right", yanchor="bottom", x=0.75, y=-0.15, font_size=20, bgcolor="ghostwhite", bordercolor="gray", borderwidth=0.5)
     fig = px.bar(df, x="METRIC", y="PERCENT", color="TOOL", facet_col="SUBSET", barmode="group", facet_col_spacing=0.04,
-                 height=840, category_orders=category_orders, color_discrete_map=TOOLS_COLOR_MAP_KF)
+                 height=840, category_orders=category_orders, color_discrete_map=new_color_map)
     fig.update_layout(legend=legend, font_family="Figtree", font_color="dimgray", font_size=18, margin=dict(t=150), xaxis=dict(automargin=True),
                       title=dict(text="Precision, Sensitivity and F1 Score metrics", x=0.05, font_size=32, font_color="black"))
     fig.add_annotation(x=-0.03, y=0.5, text="Percent", textangle=-90, xref="paper", yref="paper", font_family="Figtree", font_color="dimgray", font_size=24)
@@ -83,9 +122,14 @@ def build_counts_df(df):
 
 
 def plot_counts_df(df, category_orders):
+    new_color_map = ensure_color_map_from_palette(
+        TOOLS_COLOR_MAP_KF,
+        df["TOOL"].unique(),
+        palette=px.colors.qualitative.Plotly
+    )
     legend = dict(orientation="h", xanchor="right", yanchor="bottom", x=0.75, y=-0.15, font_size=20, bgcolor="ghostwhite", bordercolor="gray", borderwidth=0.5)
     fig = px.bar(df, x="METRIC", y="COUNT", color="TOOL", facet_col="SUBSET", barmode="group", facet_col_spacing=0.04,
-                 height=840, category_orders=category_orders, color_discrete_map=TOOLS_COLOR_MAP_KF)
+                 height=840, category_orders=category_orders, color_discrete_map=new_color_map)
     fig.update_layout(legend=legend, font_family="Figtree", font_color="dimgray", font_size=18, margin=dict(t=150), xaxis=dict(automargin=True),
                       title=dict(text="True Positive, False Positive and False Negative counts", x=0.05, font_size=32, font_color="black"))
     fig.add_annotation(x=-0.03, y=0.5, text="Count", textangle=-90, xref="paper", yref="paper", font_family="Figtree", font_color="dimgray", font_size=24)
