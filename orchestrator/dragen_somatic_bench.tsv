@@ -1,0 +1,36 @@
+tumor_biospecimen	normal_biospecimen	truth_vcf	start_from	tumor_bam	normal_bam	alignment_type	somatic_type	call_vcf
+SPP_GT_3-1	SPP_GT_0-1	69c15af5f4fec601ac2e488f	align	69aa16a5ec41af30b9d16193	69a9b6d155b9050ca7234578
+SPP_GT_3-1	SPP_GT_0-1	69c15af5f4fec601ac2e488f	somatic	69b2f22db09aaa6b90973f87	69b2f22cb09aaa6b90973f6b	DRAGEN4.4
+SPP_GT_3-1	SPP_GT_0-1	69c15af5f4fec601ac2e488f	benchmark			DRAGEN4.4	DRAGEN4.4	69bdcae9569ef914832f9679
+SPP_GT_3-1	SPP_GT_0-1	69c15af5f4fec601ac2e488f	benchmark			DRAGEN4.4	DRAGEN4.5	69bdcaea569ef914832f96e1
+SPP_GT_3-1	SPP_GT_0-1	69c15af5f4fec601ac2e488f	benchmark			DRAGEN4.5	DRAGEN4.5	69bdcaea569ef914832f96c3
+SPP_GT_1-4	SPP_GT_0-1	69c15af5f4fec601ac2e488f	align	69a9b6d155b9050ca7234574	69a9b6d155b9050ca7234578
+SPP_GT_1-4	SPP_GT_0-1	69c15af5f4fec601ac2e488f	somatic	69b2f22bb09aaa6b90973f4b	69b2f22db09aaa6b90973f82	DRAGEN4.4
+SPP_GT_1-4	SPP_GT_0-1	69c15af5f4fec601ac2e488f	benchmark			DRAGEN4.4	DRAGEN4.4	69bdcaea569ef914832f96ef
+SPP_GT_1-4	SPP_GT_0-1	69c15af5f4fec601ac2e488f	benchmark			DRAGEN4.4	DRAGEN4.5	69bdcaea569ef914832f96e3
+SPP_GT_1-4	SPP_GT_0-1	69c15af5f4fec601ac2e488f	benchmark			DRAGEN4.5	DRAGEN4.5	69bdcae9569ef914832f9676
+WGS_NS_T_1	WGS_NS_N_1	69c15af5f4fec601ac2e488f	align	656e043f5d793a326b8a8909	656e043f5d793a326b8a8905
+WGS_NS_T_1	WGS_NS_N_1	69c15af5f4fec601ac2e488f	somatic	69b2f22bb09aaa6b90973f46	69b2f22cb09aaa6b90973f55	DRAGEN4.4
+WGS_NS_T_1	WGS_NS_N_1	69c15af5f4fec601ac2e488f	benchmark			DRAGEN4.4	DRAGEN4.4	69bdcae9569ef914832f9677
+WGS_NS_T_1	WGS_NS_N_1	69c15af5f4fec601ac2e488f	benchmark			DRAGEN4.4	DRAGEN4.5	69bdcae9569ef914832f9671
+WGS_NS_T_1	WGS_NS_N_1	69c15af5f4fec601ac2e488f	benchmark			DRAGEN4.5	DRAGEN4.5	69bdcaea569ef914832f96b7
+COLO-829	COLO-829BL	69c15ae6d682853f4424dad5	downsample	https://storage.googleapis.com/lancet2-manuscript/data/COLO829/ILMN/bams_crams/COLO-829-NovaSeq.final.bam	https://storage.googleapis.com/lancet2-manuscript/data/COLO829/ILMN/bams_crams/COLO-829BL-NovaSeq.final.bam
+COLO-829	COLO-829BL	69c15ae6d682853f4424dad5	somatic	69b2f111b09aaa6b90973f0a	69b2f111b09aaa6b90973f09	DRAGEN4.4
+COLO-829	COLO-829BL	69c15ae6d682853f4424dad5	benchmark			DRAGEN4.4	DRAGEN4.4	69bdcae9569ef914832f9672
+COLO-829	COLO-829BL	69c15ae6d682853f4424dad5	benchmark			DRAGEN4.4	DRAGEN4.5	69bdcaea569ef914832f96f0
+COLO-829	COLO-829BL	69c15ae6d682853f4424dad5	benchmark			DRAGEN4.5	DRAGEN4.5	69bdcaea569ef914832f96e7
+HCC-1187	HCC-1187BL	69bb03eb6d5eea71e17f2596	downsample	https://storage.googleapis.com/lancet2-manuscript/data/HCC1187/ILMN/bams_crams/HCC-1187-NovaSeq.final.bam	https://storage.googleapis.com/lancet2-manuscript/data/HCC1187/ILMN/bams_crams/HCC-1187BL-NovaSeq.final.bam
+HCC-1187	HCC-1187BL	69bb03eb6d5eea71e17f2596	somatic	69b2f22cb09aaa6b90973f7d	69b2f22cb09aaa6b90973f78	DRAGEN4.4
+HCC-1187	HCC-1187BL	69bb03eb6d5eea71e17f2596	benchmark			DRAGEN4.4	DRAGEN4.4	69bdcae9569ef914832f967b
+HCC-1187	HCC-1187BL	69bb03eb6d5eea71e17f2596	benchmark			DRAGEN4.4	DRAGEN4.5	69bdcaea569ef914832f96ee
+HCC-1187	HCC-1187BL	69bb03eb6d5eea71e17f2596	benchmark			DRAGEN4.5	DRAGEN4.5	69bdcae9569ef914832f966f
+HCC-1143	HCC-1143BL	69c15aec9711de10ee5c89a9	downsample	https://storage.googleapis.com/lancet2-manuscript/data/HCC1143/ILMN/bams_crams/HCC-1143-NovaSeq.final.bam	https://storage.googleapis.com/lancet2-manuscript/data/HCC1143/ILMN/bams_crams/HCC-1143BL-NovaSeq.final.bam
+HCC-1143	HCC-1143BL	69c15aec9711de10ee5c89a9	somatic	69b2f15bb09aaa6b90973f1b	69b2f15bb09aaa6b90973f1f	DRAGEN4.4
+HCC-1143	HCC-1143BL	69c15aec9711de10ee5c89a9	benchmark			DRAGEN4.4	DRAGEN4.4	69bdcae9569ef914832f967f
+HCC-1143	HCC-1143BL	69c15aec9711de10ee5c89a9	benchmark			DRAGEN4.4	DRAGEN4.5	69bdcaea569ef914832f96bc
+HCC-1143	HCC-1143BL	69c15aec9711de10ee5c89a9	benchmark			DRAGEN4.5	DRAGEN4.5	69bdcaea569ef914832f96d3
+HG008-T	HG008-N-D	69c15afd569ef91483309096	downsample	https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/data_somatic/HG008/Liss_lab/NYGC_Illumina-WGS_20231023/HG008-T_Illumina_161x_GRCh38-GIABv3.bam	https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/data_somatic/HG008/Liss_lab/BCM_Illumina-WGS_20240313/HG008-N-D_Illumina_169x_GRCh38-GIABv3.bam
+HG008-T	HG008-N-D	69c15afd569ef91483309096	somatic	69b2f22cb09aaa6b90973f5f	69b2f22bb09aaa6b90973f2f	DRAGEN4.4
+HG008-T	HG008-N-D	69c15afd569ef91483309096	benchmark			DRAGEN4.4	DRAGEN4.4	69bdcae9569ef914832f967d
+HG008-T	HG008-N-D	69c15afd569ef91483309096	benchmark			DRAGEN4.4	DRAGEN4.5	69c1ab15d682853f44252fc7
+HG008-T	HG008-N-D	69c15afd569ef91483309096	benchmark			DRAGEN4.5	DRAGEN4.5	69bdcaea569ef914832f96f5
