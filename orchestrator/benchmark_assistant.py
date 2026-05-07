@@ -33,7 +33,6 @@ VALID_START_FROM = {
     "downsample",
     "align",
     "somatic",
-    "consensus",
     "benchmark",
 }
 
