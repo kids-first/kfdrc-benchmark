@@ -3,45 +3,86 @@
 import argparse
 import itertools
 import sys
-
-# pip install cyvcf2
 import cyvcf2
 
 HEADER_COLUMNS = ["CHROM", "POS", "REF", "ALT", "SCORE", "STATUS", "CALL_WEIGHT", "TOOL", "SUBSET", "STRATIFICATION"]
-POSSIBLE_STRATIFICATIONS = ["WholeGenome", "Homopolymer", "TandemRepeat", "Satellite", "LowMappability", "SegDup", "DifficultRegion", "EasyRegion"]
+
+def get_record_status(record: cyvcf2.Variant) -> str:
+    """Derive the benchmarking status for a vcfeval VCF record.
+
+    The status is determined from RTG vcfeval INFO annotations, preferring
+    the ``BASE`` field (baseline records) and falling back to the ``CALL``
+    field (call records). True positives (``TP``) are suffixed to indicate
+    their origin.
+
+    Mapping rules:
+      - INFO["BASE"] == "TP"  -> "TP_baseline"
+      - INFO["CALL"] == "TP"  -> "TP_call"
+      - Other values are returned unchanged.
+
+    Args:
+        record: A ``cyvcf2.Variant`` representing a single VCF record.
+
+    Returns:
+        A status string such as "TP_call", "FP", "FN", or "IGN".
+    """
+    base = record.INFO.get("BASE")
+    if base:
+        return f"{base}_baseline" if base == "TP" else base
+
+    call = record.INFO.get("CALL")
+    if call:
+        return f"{call}_call" if call == "TP" else call
+
+    return "UNK"
 
 
-def get_record_status(record):
-    value = record.INFO.get("BASE", False)
-    if value:
-        return f"{value}_baseline" if value == "TP" else value
-    value = record.INFO["CALL"]
-    return f"{value}_call" if value == "TP" else value
+def process_rtg_vcf(vcf_path: str, tool: str, out_wf) -> None:
+    """Process an RTG vcfeval VCF and write benchmarking rows to a TSV.
 
+    Each variant record is expanded into multiple output rows by taking the
+    Cartesian product of variant subsets ("Combined", "SNV", "InDel") and
+    genomic stratifications ("WholeGenome" plus any values in
+    INFO["STRATIFICATIONS"]).
 
-def process_rtg_vcf(vcf_path, tool, out_wf):
+    Baseline VCFs are detected heuristically via the filename and assigned
+    sentinel values for numeric fields that are only meaningful for call
+    VCFs.
+
+    Args:
+        vcf_path: Path to a vcfeval call or baseline VCF file.
+        tool: Name of the variant calling tool being benchmarked.
+        out_wf: Open, writable file handle for TSV output.
+
+    Returns:
+        None
+    """
     is_base_vcf = "baseline.vcf.gz" in vcf_path
 
-    for record in cyvcf2.Reader(vcf_path):
-        status = get_record_status(record)
-        if status == "IGN" or status == "OUT":
-            continue
 
-        chrom = record.CHROM
-        pos = record.POS
-        ref = record.REF
-        alt = ",".join(record.ALT)
-        score = -1.0 if is_base_vcf else record.QUAL
-        call_weight = -1.0 if is_base_vcf else record.INFO.get("CALL_WEIGHT", 1.0)
-        all_subsets = ["Combined", "SNV" if record.is_snp else "InDel"]
-        all_stratifications = ["WholeGenome"] + record.INFO["STRATIFICATIONS"].split(",")
+    with cyvcf2.Reader(vcf_path) as reader:
+        for record in reader:
+            status = get_record_status(record)
+            if status in {"IGN", "OUT"}:
+                continue
 
-        for subset, stratification in itertools.product(all_subsets, all_stratifications):
-            print("\t".join([chrom, str(pos), ref, alt, str(score), status, str(call_weight), tool, subset, stratification]), file=out_wf)
+            chrom = record.CHROM
+            pos = record.POS
+            ref = record.REF
+            alt = ",".join(record.ALT) if record.ALT else "."
+            score = -1.0 if is_base_vcf else record.QUAL
+            call_weight = -1.0 if is_base_vcf else record.INFO.get("CALL_WEIGHT", 1.0)
+            all_subsets = ["Combined", "SNV" if record.is_snp else "InDel"]
+            raw = record.INFO.get("STRATIFICATIONS", "")
+            all_stratifications = ["WholeGenome", *raw.split(",")] if raw else ["WholeGenome"]
+            all_stratifications = sorted(set(all_stratifications))
+
+            for subset, stratification in itertools.product(all_subsets, all_stratifications):
+                print("\t".join([chrom, str(pos), ref, alt, str(score), status, str(call_weight), tool, subset, stratification]), file=out_wf)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser("build_report_df", description="Build benchmarking report dataframe")
+    parser = argparse.ArgumentParser("build_report_df", description="Build benchmarking report dataframe", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--sample_name", required=True, help="Basename for output files, without extension")
     parser.add_argument("--tool_name", required=True, help="Name of tool being processed for the benchmarking report")
     parser.add_argument("--call_vcf", required=True, help="Path to a single call vcf to process instead of globbing for RTG vcfeval results in the root directory")

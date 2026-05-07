@@ -37,7 +37,27 @@ TOOLS_COLOR_MAP_KF = {
 }
 
 
-def ensure_color_map_from_palette(color_map: dict, keys, palette=None) -> dict:
+def ensure_color_map_from_palette(color_map: dict[str, str], keys, palette=None) -> dict[str, str]:
+    """Ensure all keys have distinct colors using a qualitative palette.
+
+    This function extends an existing color map by assigning colors to any
+    missing keys from a provided qualitative palette. Colors are chosen in
+    a deterministic order, avoiding reuse (case-insensitive). If the palette
+    is exhausted, an error is raised.
+
+    Args:
+        color_map: Existing mapping from key (e.g., tool name) to color string.
+        keys: Iterable of keys that must be present in the output color map.
+        palette: Optional list of color strings to use for assignment. If not
+            provided, a combined Plotly qualitative palette is used.
+
+    Returns:
+        A dictionary mapping all requested keys to unique color strings.
+
+    Raises:
+        ValueError: If the palette does not contain enough distinct colors to
+            assign all missing keys.
+    """
     out = dict(color_map)
     used = {str(c).strip().lower() for c in out.values()}
 
@@ -71,32 +91,82 @@ def ensure_color_map_from_palette(color_map: dict, keys, palette=None) -> dict:
 
     return out
 
-def build_metrics_df(df, counts):
-    tmp = list()
-    for tool, subset in itertools.product(df.TOOL.unique(), df.SUBSET.unique()):
-        tp_baseline = next(iter(counts[(counts.TOOL == tool) & (counts.SUBSET == subset) & (counts.METRIC == "TP_baseline")].COUNT), 0)
-        tp_call = next(iter(counts[(counts.TOOL == tool) & (counts.SUBSET == subset) & (counts.METRIC == "TP_call")].COUNT), 0)
-        fp = next(iter(counts[(counts.TOOL == tool) & (counts.SUBSET == subset) & (counts.METRIC == "FP")].COUNT), 0)
-        fn = next(iter(counts[(counts.TOOL == tool) & (counts.SUBSET == subset) & (counts.METRIC == "FN")].COUNT), 0)
+def build_metrics_df(counts: pd.DataFrame) -> pd.DataFrame:
+    """Compute precision, sensitivity, and F1 score from status counts.
 
-        total_calls_count = tp_call + fp
-        total_baseline_count = tp_baseline + fn
+    Given a dataframe of per-status counts for each tool and variant subset,
+    this function computes standard performance metrics:
+    Precision, Sensitivity, and F1 Score. All metric values are expressed
+    as percentages.
 
-        precision = 0.0 if total_calls_count == 0 else 100 * (tp_call / total_calls_count)
-        sensitivity = 0.0 if total_baseline_count == 0 else 100 * (tp_baseline / total_baseline_count)
+    Metrics are computed only for observed (tool, subset) combinations, and
+    missing status categories are treated as having zero count.
 
-        sum_pr = precision + sensitivity
-        mul_pr = precision * sensitivity
-        f1_score = 0.0 if sum_pr == 0 else (2 * mul_pr) / sum_pr
+    Args:
+        counts: A pandas DataFrame with columns TOOL, SUBSET, METRIC, and COUNT,
+            as produced by ``build_counts_df``.
 
-        tmp.append((tool, subset, "Precision", precision))
-        tmp.append((tool, subset, "Sensitivity", sensitivity))
-        tmp.append((tool, subset, "F1_Score", f1_score))
+    Returns:
+        A pandas DataFrame with columns:
+        - TOOL: Tool name
+        - SUBSET: Variant subset
+        - METRIC: Metric name ("Precision", "Sensitivity", "F1_Score")
+        - PERCENT: Metric value expressed as a percentage.
+    """
+    pivot = (
+        counts
+        .pivot_table(
+            index=["TOOL", "SUBSET"],
+            columns="METRIC",
+            values="COUNT",
+            fill_value=0,
+            observed=True,
+        )
+    )
 
-    return pd.DataFrame.from_records(tmp, columns=("TOOL", "SUBSET", "METRIC", "PERCENT"))
+    rows = []
+    for (tool, subset), row in pivot.iterrows():
+        tp_baseline = row.get("TP_baseline", 0)
+        tp_call = row.get("TP_call", 0)
+        fp = row.get("FP", 0)
+        fn = row.get("FN", 0)
 
+        total_calls = tp_call + fp
+        total_baseline = tp_baseline + fn
 
-def plot_metrics_df(df, category_orders):
+        precision = 0.0 if total_calls == 0 else 100 * tp_call / total_calls
+        sensitivity = 0.0 if total_baseline == 0 else 100 * tp_baseline / total_baseline
+        f1 = 0.0 if (precision + sensitivity) == 0 else 2 * precision * sensitivity / (precision + sensitivity)
+
+        rows.extend([
+            (tool, subset, "Precision", precision),
+            (tool, subset, "Sensitivity", sensitivity),
+            (tool, subset, "F1_Score", f1),
+        ])
+
+    return pd.DataFrame(rows, columns=["TOOL", "SUBSET", "METRIC", "PERCENT"])
+
+def plot_metrics_df(
+    df: pd.DataFrame,
+    category_orders: dict[str, list[str]],
+):
+    """Create a grouped bar chart of benchmarking metrics.
+
+    Generates a Plotly bar chart visualizing Precision, Sensitivity, and
+    F1 Score for each tool, faceted by variant subset. Tool colors are
+    assigned deterministically using a predefined color map extended as
+    needed from a qualitative palette.
+
+    Args:
+        df: A pandas DataFrame containing metric values with columns TOOL,
+            SUBSET, METRIC, and PERCENT, as produced by ``build_metrics_df``.
+        category_orders: Dictionary specifying the display order for
+            categorical axes (e.g., METRIC, TOOL, SUBSET).
+
+    Returns:
+        A Plotly Figure representing the metrics bar chart.
+    """
+
     new_color_map = ensure_color_map_from_palette(
         TOOLS_COLOR_MAP_KF,
         df["TOOL"].unique(),
@@ -107,21 +177,60 @@ def plot_metrics_df(df, category_orders):
                  height=840, category_orders=category_orders, color_discrete_map=new_color_map)
     fig.update_layout(legend=legend, font_family="Figtree", font_color="dimgray", font_size=18, margin=dict(t=150), xaxis=dict(automargin=True),
                       title=dict(text="Precision, Sensitivity and F1 Score metrics", x=0.05, font_size=32, font_color="black"))
-    fig.add_annotation(x=-0.03, y=0.5, text="Percent", textangle=-90, xref="paper", yref="paper", font_family="Figtree", font_color="dimgray", font_size=24)
+    fig.add_annotation(x=-0.03, y=0.5, textangle=-90, xref="paper", yref="paper", font_family="Figtree", font_color="dimgray", font_size=24)
+    fig.update_yaxes(ticksuffix="%")
     fig.for_each_xaxis(lambda x: x.update(title=""))
     fig.for_each_yaxis(lambda y: y.update(title=""))
     return fig
 
 
-def build_counts_df(df):
-    tmp = list()
-    for name, group in df.groupby(by=["TOOL", "SUBSET", "STATUS"], observed=True):
-        tmp.append((*name, len(group)))
+def build_counts_df(df: pd.DataFrame) -> pd.DataFrame:
+    """Aggregate raw benchmarking records into status counts.
 
-    return pd.DataFrame.from_records(tmp, columns=("TOOL", "SUBSET", "METRIC", "COUNT"))
+    Groups the input dataframe by tool, variant subset, and status, and
+    computes the number of records in each group. The resulting dataframe
+    represents observed counts only (no unobserved combinations are added).
+
+    Args:
+        df: A pandas DataFrame containing benchmarking records with at least
+            the columns TOOL, SUBSET, and STATUS.
+
+    Returns:
+        A pandas DataFrame with columns:
+        - TOOL: Tool name
+        - SUBSET: Variant subset (e.g., Combined, SNV, InDel)
+        - METRIC: Status label (e.g., TP_call, TP_baseline, FP, FN)
+        - COUNT: Number of records for each (TOOL, SUBSET, METRIC) combination.
+    """
+    return (
+        df
+        .groupby(["TOOL", "SUBSET", "STATUS"], observed=True)
+        .size()
+        .reset_index(name="COUNT")
+        .rename(columns={"STATUS": "METRIC"})
+    )
 
 
-def plot_counts_df(df, category_orders):
+def plot_counts_df(
+    df: pd.DataFrame,
+    category_orders: dict[str, list[str]]
+):
+    """Create a grouped bar chart of variant classification counts.
+
+    Generates a Plotly bar chart visualizing the counts of true positives,
+    false positives, and false negatives for each tool, faceted by variant
+    subset. Tool colors are assigned deterministically using a predefined
+    color map extended as needed from a qualitative palette.
+
+    Args:
+        df: A pandas DataFrame containing count values with columns TOOL,
+            SUBSET, METRIC, and COUNT, as produced by ``build_counts_df``.
+        category_orders: Dictionary specifying the display order for
+            categorical axes (e.g., METRIC, TOOL, SUBSET).
+
+    Returns:
+        A Plotly Figure representing the grouped count bar chart.
+    """
     new_color_map = ensure_color_map_from_palette(
         TOOLS_COLOR_MAP_KF,
         df["TOOL"].unique(),
@@ -331,7 +440,7 @@ def make_stratification_report(stratification, cli_args):
         df = pd.concat(dfs, ignore_index=True)
 
     counts = build_counts_df(df)
-    metrics = build_metrics_df(df, counts)
+    metrics = build_metrics_df(counts)
 
 #    calls = df[(~df.STATUS.str.contains("TP_baseline")) & (~df.STATUS.str.contains("FN"))]
 #    baseline = df[(~df.STATUS.str.contains("TP_call")) & (~df.STATUS.str.contains("FP"))]
