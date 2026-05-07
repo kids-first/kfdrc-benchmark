@@ -104,8 +104,8 @@ def tsv_to_manifest_json(tsv_path):
                     "inputs": {},
                     "task_id": None,
                 },
-                "call_vcf_fileid": row.get("call_vcf_fileid"),
-                "truth_vcf_fileid": row.get("truth_vcf_fileid"),
+                "call_vcf": row.get("call_vcf"),
+                "truth_vcf": row.get("truth_vcf"),
                 "align_type": row.get("alignment_type"),
                 "somatic_type": row.get("somatic_type"),
                 "tumor_biospecimen": row.get("tumor_biospecimen"),
@@ -164,8 +164,8 @@ def validate_manifest_files(manifest: dict, api) -> None:
         file_ids.extend(safe_get_path(entry, "align", "normal", "inputs", "input_bam_list") or [])
         file_ids.append(safe_get_path(entry, "somatic", "inputs", "input_tumor_aligned"))
         file_ids.append(safe_get_path(entry, "somatic", "inputs", "input_normal_aligned"))
-        file_ids.append(safe_get_path(entry, "call_vcf_fileid"))
-        file_ids.append(safe_get_path(entry, "truth_vcf_fileid"))
+        file_ids.append(safe_get_path(entry, "call_vcf"))
+        file_ids.append(safe_get_path(entry, "truth_vcf"))
         for fid in file_ids:
             if fid and not is_valid_id(fid, api):
                 errors.append(f"[Manifest {row_num=}] Invalid FILE ID: {fid=}")
@@ -188,7 +188,7 @@ def validate_required_fields(manifest: dict) -> None:
         required_fields = (
             "tumor_biospecimen",
             "normal_biospecimen",
-            "truth_vcf_fileid",
+            "truth_vcf",
             "start_from",
         )
 
@@ -235,9 +235,9 @@ def validate_required_fields(manifest: dict) -> None:
                 errors.append(f"{prefix} Missing align_type")
 
         elif start_from == "benchmark":
-            if not entry.get("call_vcf_fileid"):
+            if not entry.get("call_vcf"):
                 errors.append(
-                    f"{prefix} Missing call_vcf_fileid"
+                    f"{prefix} Missing call_vcf"
                 )
             if not entry.get("align_type"):
                 errors.append(f"{prefix} Missing align_type")
@@ -383,7 +383,7 @@ def create_benchmark_payload(
     call_vcfs = []
     tool_names = []
     for entry in grouped_entries:
-        call_vcfs.append(get_file(api, entry["call_vcf_fileid"]))
+        call_vcfs.append(get_file(api, entry["call_vcf"]))
         tool_names.append(f"{entry.get('align_type')}-{entry.get('somatic_type')}")
 
     input_copy.update({
@@ -651,7 +651,7 @@ def handle_consensus(run_id, entry, api, args):
         logging.info(f"[{run_id}] Waiting on consensus: {task.status}")
         return "consensus"
 
-    entry["call_vcf_fileid"] = next(
+    entry["call_vcf"] = next(
         o["path"]
         for o in task.outputs["annotated_protected_outputs"]
         if o.get("basename", "").endswith("vcf.gz")
@@ -667,7 +667,7 @@ def handle_benchmark(run_id, *_):
 def handle_benchmark_aggregate(status, api, args):
     """
     Runs once when all runs are ready for benchmarking.
-    Groups entries by (tumor_biospecimen, truth_vcf_fileid)
+    Groups entries by (tumor_biospecimen, truth_vcf)
     and launches benchmark tasks.
     """
     groups = {}
@@ -675,7 +675,7 @@ def handle_benchmark_aggregate(status, api, args):
     for entry in status.values():
         key = (
             entry["tumor_biospecimen"],
-            entry["truth_vcf_fileid"],
+            entry["truth_vcf"],
         )
         groups.setdefault(key, []).append(entry)
 
