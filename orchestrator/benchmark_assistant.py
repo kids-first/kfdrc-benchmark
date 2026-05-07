@@ -48,14 +48,12 @@ def get_file(api, file_id):
         _FILE_CACHE[file_id] = api.files.get(file_id)
     return _FILE_CACHE[file_id]
 
-
 def get_task(api, task_id):
-    if not task_id:
+    if not task_id or task_id == "DRY_RUN_TASK_ID":
         return None
     if task_id not in _TASK_CACHE:
         _TASK_CACHE[task_id] = api.tasks.get(task_id)
     return _TASK_CACHE[task_id]
-
 
 def get_app(api, app_id):
     if not app_id:
@@ -84,7 +82,7 @@ def tsv_to_manifest_json(tsv_path):
     with open(tsv_path, newline="") as f:
         reader = csv.DictReader(f, delimiter="\t")
         for row_num, row in enumerate(reader, start=1):
-            run_id = f"{row.get('tumor_biospecimen')}-{row.get('normal_biospecimen')}.{row.get('alignment_type', 'BWA')}-{row.get('somatic_type', 'KFsomatic')}"
+            run_id = f"{row.get('tumor_biospecimen')}-{row.get('normal_biospecimen')}.{row.get('alignment_type') or 'BWA'}-{row.get('somatic_type') or 'KFsomatic'}"
             start_from = row.get("start_from")
 
             entry = {
@@ -275,7 +273,7 @@ def create_align_payload(
     api,
 ) -> dict:
     bam_list = [
-        get_file(api, fid).path
+        get_file(api, fid)
         for fid in inputs.get("input_bam_list", [])
     ]
 
@@ -469,6 +467,7 @@ def ensure_task(
     )
 
     task_id = create_task(biospecimen, payload, draft, api)
+    logging.info(f"[{run_id}] Created {step} task ({role}): {task_id}")
     node["task_id"] = task_id
     return task_id
 
@@ -526,8 +525,13 @@ def handle_downsample(run_id, entry, api, args):
         api=api,
     )
 
+
     tumor_task = get_task(api, tumor_task_id)
     normal_task = get_task(api, normal_task_id)
+
+    if api._dry_run:
+        logging.info(f"[{run_id}] DRY RUN: skipping downsample polling")
+        return None
 
     if tumor_task.status == normal_task.status == TASK_DONE:
         logging.info(f"[{run_id}] Downsample completed → align")
@@ -575,6 +579,10 @@ def handle_align(run_id, entry, api, args):
     tumor_task = get_task(api, tumor_task_id)
     normal_task = get_task(api, normal_task_id)
 
+    if api._dry_run:
+        logging.info(f"[{run_id}] DRY RUN: skipping align polling")
+        return None
+
     if tumor_task.status == normal_task.status == TASK_DONE:
         logging.info(f"[{run_id}] Align completed → somatic")
 
@@ -607,6 +615,10 @@ def handle_somatic(run_id, entry, api, args):
     )
 
     task = get_task(api, task_id)
+
+    if api._dry_run:
+        logging.info(f"[{run_id}] DRY RUN: skipping somatic polling")
+        return None
 
     if task.status != TASK_DONE:
         logging.info(f"[{run_id}] Waiting on somatic: {task.status}")
@@ -646,6 +658,10 @@ def handle_consensus(run_id, entry, api, args):
     )
 
     task = get_task(api, task_id)
+
+    if api._dry_run:
+        logging.info(f"[{run_id}] DRY RUN: skipping consensus polling")
+        return None
 
     if task.status != TASK_DONE:
         logging.info(f"[{run_id}] Waiting on consensus: {task.status}")
